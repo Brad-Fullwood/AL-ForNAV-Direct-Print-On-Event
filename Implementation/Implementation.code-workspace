@@ -7,6 +7,9 @@
       "path": "Warehouse"
     },
     {
+      "path": "Implementation.Test"
+    },
+    {
       "path": ".AL-Go"
     }
   ],
