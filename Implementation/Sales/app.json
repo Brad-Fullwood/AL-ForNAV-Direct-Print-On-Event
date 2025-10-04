@@ -1,0 +1,31 @@
+{
+  "id": "f2ae6113-738c-4b3b-a99c-94028d2de127",
+  "name": "Sales",
+  "publisher": "Brad Fullwood",
+  "version": "1.0.0.0",
+  "brief": "",
+  "description": "",
+  "privacyStatement": "",
+  "EULA": "",
+  "help": "",
+  "url": "",
+  "logo": "",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "1.0.0.0",
+  "application": "22.0.0.0",
+  "idRanges": [
+    {
+      "from": 77730,
+      "to": 77739
+    }
+  ],
+  "features": [
+    "NoImplicitWith"
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  }
+}
