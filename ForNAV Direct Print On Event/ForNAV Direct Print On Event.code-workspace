@@ -10,6 +10,9 @@
       "path": "Core.Test"
     },
     {
+      "path": "Core.PerformanceTest"
+    },
+    {
       "path": ".AL-Go"
     }
   ],

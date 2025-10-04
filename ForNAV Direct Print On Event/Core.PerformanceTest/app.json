@@ -1,0 +1,54 @@
+{
+  "id": "fc2b4d88-ddee-427c-8ca2-c733da841dce",
+  "name": "Core.PerformanceTest",
+  "publisher": "Brad Fullwood",
+  "version": "1.0.0.0",
+  "brief": "Performance Toolkit Samples (US)",
+  "description": "This extension provides tests that simulate business processes, such as creating sales orders, for the Business Central Performance Toolkit. Developers can use these to test for performance regressions during development.",
+  "platform": "27.0.0.0",
+  "application": "27.0.0.0",
+  "runtime": "16.0",
+  "logo": "",
+  "url": "",
+  "EULA": "",
+  "privacyStatement": "",
+  "help": "",
+  "target": "Cloud",
+  "screenshots": [],
+  "dependencies": [
+    {
+      "id": "75f1590f-55c5-4501-ae63-bada5534e852",
+      "publisher": "Microsoft",
+      "name": "Performance Toolkit",
+      "version": "27.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "publisher": "Microsoft",
+      "name": "Tests-TestLibraries",
+      "version": "27.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 77820,
+      "to": 77839
+    }
+  ],
+  "features": [
+    "TranslationFile",
+    "GenerateCaptions"
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "source": {
+    "repositoryUrl": "https://github.com/microsoft/BCApps",
+    "commit": "9950b0dc18096337f9a56b9347d63e85177075c7"
+  },
+  "build": {},
+  "internalsVisibleTo": [],
+  "keyVaultUrls": []
+}
