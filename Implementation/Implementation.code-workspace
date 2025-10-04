@@ -4,6 +4,15 @@
       "path": "Purchase"
     },
     {
+      "path": "Sales"
+    },
+    {
+      "path": "Warehouse"
+    },
+    {
+      "path": "Implementation.Test"
+    },
+    {
       "path": ".AL-Go"
     }
   ],

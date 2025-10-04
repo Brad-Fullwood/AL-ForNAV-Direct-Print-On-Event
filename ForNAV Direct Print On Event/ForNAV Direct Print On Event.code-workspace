@@ -4,6 +4,12 @@
       "path": "Core"
     },
     {
+      "path": "Logging"
+    },
+    {
+      "path": "Core.Test"
+    },
+    {
       "path": ".AL-Go"
     }
   ],
