@@ -4,6 +4,9 @@
       "path": "Sales"
     },
     {
+      "path": "Warehouse"
+    },
+    {
       "path": ".AL-Go"
     }
   ],
