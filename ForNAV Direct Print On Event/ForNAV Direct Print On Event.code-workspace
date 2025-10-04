@@ -4,6 +4,9 @@
       "path": "Core"
     },
     {
+      "path": "Logging"
+    },
+    {
       "path": ".AL-Go"
     }
   ],
