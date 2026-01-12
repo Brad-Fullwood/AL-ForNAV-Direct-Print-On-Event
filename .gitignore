@@ -17,5 +17,6 @@ rad.json
 .altemplates/
 .altestrunner/
 .snapshots/
+.vscode/
 cache_*
 ~$*

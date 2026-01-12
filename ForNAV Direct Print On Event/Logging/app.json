@@ -1,19 +1,27 @@
 {
   "id": "1076319c-728e-4180-b924-d0c6abe2014a",
-  "name": "Logging",
+  "name": "ForNAV Direct Print On Event - Logging",
   "publisher": "Brad Fullwood",
   "version": "1.0.0.0",
-  "brief": "",
-  "description": "",
+  "brief": "Logging module for ForNAV Direct Print On Event.",
+  "description": "Provides comprehensive logging capabilities for the ForNAV Direct Print On Event extension, capturing events, errors, and operational details for monitoring and debugging.",
   "privacyStatement": "",
   "EULA": "",
   "help": "",
-  "url": "",
-  "logo": "",
-  "dependencies": [],
+  "url": "https://github.com/bradfullwood97/AL-ForNAV-Direct-Print-On-Event",
+  "logo": "./resources/TechnicallyBusinesscentral.png",
+  "dependencies": [
+    {
+      "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
+      "name": "ForNAV Direct Print On Event - Core",
+      "publisher": "Brad Fullwood",
+      "version": "1.0.0.0"
+    }
+  ],
   "screenshots": [],
   "platform": "1.0.0.0",
-  "application": "22.0.0.0",
+  "application": "26.0.0.0",
+  "runtime": "15.2",
   "idRanges": [
     {
       "from": 77720,

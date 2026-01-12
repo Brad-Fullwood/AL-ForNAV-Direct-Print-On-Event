@@ -1,14 +1,14 @@
 {
   "id": "fc2b4d88-ddee-427c-8ca2-c733da841dce",
-  "name": "Core.PerformanceTest",
+  "name": "ForNAV Direct Print On Event - Performance Tests",
   "publisher": "Brad Fullwood",
   "version": "1.0.0.0",
-  "brief": "Performance Toolkit Samples (US)",
-  "description": "This extension provides tests that simulate business processes, such as creating sales orders, for the Business Central Performance Toolkit. Developers can use these to test for performance regressions during development.",
-  "platform": "27.0.0.0",
-  "application": "27.0.0.0",
-  "runtime": "16.0",
-  "logo": "",
+  "brief": "Performance tests for ForNAV Direct Print On Event Core.",
+  "description": "This extension provides performance tests simulating business processes for the ForNAV Direct Print On Event Core, to detect regressions during development.",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "runtime": "15.0",
+  "logo": "./resources/TechnicallyBusinesscentral.png",
   "url": "",
   "EULA": "",
   "privacyStatement": "",
@@ -17,16 +17,22 @@
   "screenshots": [],
   "dependencies": [
     {
+      "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
+      "name": "Core",
+      "publisher": "Brad Fullwood",
+      "version": "1.0.0.0"
+    },
+    {
       "id": "75f1590f-55c5-4501-ae63-bada5534e852",
       "publisher": "Microsoft",
       "name": "Performance Toolkit",
-      "version": "27.0.0.0"
+      "version": "26.0.0.0"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "publisher": "Microsoft",
       "name": "Tests-TestLibraries",
-      "version": "27.0.0.0"
+      "version": "26.0.0.0"
     }
   ],
   "idRanges": [

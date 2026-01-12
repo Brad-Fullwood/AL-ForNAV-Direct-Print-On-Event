@@ -2,7 +2,13 @@
     "folders": [
         {
             "path": ".AL-Go"
-        }
+        },
+		{
+			"path": "ForNAV Direct Print On Event"
+		},
+		{
+			"path": "Implementation"
+		}
     ],
     "settings": {}
 }
