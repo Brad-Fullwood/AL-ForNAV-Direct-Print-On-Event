@@ -1,9 +1,9 @@
-namespace AdvaniaUK.ForNAV.LabelPrinting.Purchase;
+namespace BradFullwood.ForNAV.Implementation.Purchase;
 
 /// <summary>
 /// Enum for purchase events.
 /// </summary>
-enum 77715 "AUK Purchase Events"
+enum 77740 "BJF Purchase Events"
 {
     Extensible = true;
     Caption = 'Purchase Events';

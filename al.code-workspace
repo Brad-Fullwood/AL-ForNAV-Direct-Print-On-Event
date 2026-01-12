@@ -3,12 +3,15 @@
         {
             "path": ".AL-Go"
         },
-		{
-			"path": "ForNAV Direct Print On Event"
-		},
-		{
-			"path": "Implementation"
-		}
+        {
+            "path": "ForNAV Direct Print On Event"
+        },
+        {
+            "path": "Implementation"
+        },
+        {
+            "path": "."
+        }
     ],
     "settings": {}
 }

@@ -1,9 +1,9 @@
-namespace AdvaniaUK.ForNAV.LabelPrinting.Sales;
+namespace BradFullwood.ForNAV.Implementation.Sales;
 
 /// <summary>
 /// Enum for sales label sets.
 /// </summary>
-enum 77720 "AUK Sales Label Sets"
+enum 77731 "BJF Sales Label Sets"
 {
     Extensible = true;
     Caption = 'Sales Label Sets';

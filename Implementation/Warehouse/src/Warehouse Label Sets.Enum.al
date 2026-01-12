@@ -1,9 +1,9 @@
-namespace AdvaniaUK.ForNAV.LabelPrinting.Warehouse;
+namespace BradFullwood.ForNAV.Implementation.Warehouse;
 
 /// <summary>
 /// Enum for warehouse label sets.
 /// </summary>
-enum 77724 "AUK Warehouse Label Sets"
+enum 77751 "BJF Warehouse Label Sets"
 {
     Extensible = true;
     Caption = 'Warehouse Label Sets';

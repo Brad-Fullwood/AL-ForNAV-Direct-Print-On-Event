@@ -1,9 +1,9 @@
-namespace AdvaniaUK.ForNAV.LabelPrinting.Warehouse;
+namespace BradFullwood.ForNAV.Implementation.Warehouse;
 
 /// <summary>
 /// Enum for warehouse events.
 /// </summary>
-enum 77723 "AUK Warehouse Events"
+enum 77750 "BJF Warehouse Events"
 {
     Extensible = true;
     Caption = 'Warehouse Events';

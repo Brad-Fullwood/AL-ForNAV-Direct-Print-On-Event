@@ -1,20 +1,20 @@
-namespace AdvaniaUK.ForNAV.LabelPrinting.Sales;
+namespace BradFullwood.ForNAV.Implementation.Sales;
 
-using AdvaniaUK.ForNAV.LabelPrinting;
+using BradFullwood.ForNAV.Core;
 using Microsoft.Sales.Posting;
 using Microsoft.Sales.Document;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 
-codeunit 77722 "AUK Sales Print Events"
+codeunit 77735 "BJF Sales Print Events"
 {
     Access = Internal;
     SingleInstance = true;
     InherentPermissions = x;
 
     var
-        PrintMgmt: Codeunit "AUK Print Management";
+        PrintMgmt: Codeunit "BJF Print Management";
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnAfterPostSalesDoc, '', false, false)]
     local procedure OnAfterPostSalesDoc(var SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; SalesShptHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20]; CommitIsSuppressed: Boolean; InvtPickPutaway: Boolean; var CustLedgerEntry: Record "Cust. Ledger Entry"; WhseShip: Boolean; WhseReceiv: Boolean; PreviewMode: Boolean)
@@ -28,10 +28,10 @@ codeunit 77722 "AUK Sales Print Events"
         RecRef.SetRecFilter();
 
         if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
-            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"AUK Sales Label Sets"::Sales), Format(Enum::"AUK Sales Events"::AfterPostSalesOrder));
+            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::Sales), Format(Enum::"BJF Sales Events"::AfterPostSalesOrder));
 
         if SalesHeader."Document Type" = SalesHeader."Document Type"::Invoice then
-            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"AUK Sales Label Sets"::Sales), Format(Enum::"AUK Sales Events"::AfterPostSalesInvoice));
+            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::Sales), Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Invoice Header", OnAfterInsertEvent, '', false, false)]
@@ -44,7 +44,7 @@ codeunit 77722 "AUK Sales Print Events"
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
 
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"AUK Sales Label Sets"::"Sales Posted"), Format(Enum::"AUK Sales Events"::AfterPostSalesInvoice));
+        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Shipment Header", OnAfterInsertEvent, '', false, false)]
@@ -57,7 +57,7 @@ codeunit 77722 "AUK Sales Print Events"
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
 
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"AUK Sales Label Sets"::"Sales Shipment Posted"), Format(Enum::"AUK Sales Events"::OnAfterPostSalesShipment));
+        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), Format(Enum::"BJF Sales Events"::OnAfterPostSalesShipment));
     end;
 
 }
