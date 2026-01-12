@@ -2,7 +2,7 @@ namespace BradFullwood.ForNAV.Implementation.Purchase;
 
 using BradFullwood.ForNAV.Core;
 
-enumextension 77744 "BJF Purchase Provider" extends "BJF Direct Print Provider"
+enumextension 77740 "BJF Purchase Provider" extends "BJF Direct Print Provider"
 {
     value(77745; "Purchase")
     {

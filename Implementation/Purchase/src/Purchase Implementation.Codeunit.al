@@ -1,14 +1,14 @@
-namespace BradFullwood.ForNAV.LabelPrinting.Purchase;
+namespace BradFullwood.ForNAV.Implementation.Purchase;
 
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
-using BradFullwood.ForNAV.LabelPrinting;
+using BradFullwood.ForNAV.Core;
 
 /// <summary>
 /// Purchase-focused label sets provider.
 /// Handles all purchase document labeling and events.
 /// </summary>
-codeunit 77717 "BJF Purchase Implementation" implements "I-BJF Direct Print Interface"
+codeunit 77740 "BJF Purchase Implementation" implements "I-BJF Direct Print Interface"
 {
     Access = Internal;
     InherentPermissions = x;

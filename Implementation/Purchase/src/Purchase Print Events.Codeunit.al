@@ -6,7 +6,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Purchases.History;
 
-codeunit 77743 "BJF Purchase Print Events"
+codeunit 77741 "BJF Purchase Print Events"
 {
     Access = Internal;
     SingleInstance = true;
