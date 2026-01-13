@@ -8,7 +8,7 @@ using Microsoft.Sales.Reports;
 /// Test codeunit for BJF Automatic Printing (77700).
 /// Tests GetNextSequence, NewRecord, DrillDownToSelectLayout, and field validations.
 /// </summary>
-codeunit 77804 "BJF Automatic Printing Tests"
+codeunit 77704 "BJF Automatic Printing Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;
@@ -23,17 +23,17 @@ codeunit 77804 "BJF Automatic Printing Tests"
     [Test]
     internal procedure GetNextSequence_FirstRecord_ReturnsOne()
     var
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
     begin
         this.AutoPrinting.DeleteAll(false);
         // [GIVEN] No existing automatic printing records
-        this.TestUtil.PrepareLabelTestData(LabelGroupCode, EventCode, LabelGroup, EventRec);
+        this.TestUtil.PrepareTestData(ReportSetCode, TriggerCode, ReportSet, PrintingTrigger);
 
         // [WHEN] GetNextSequence is called on new record
-        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, LabelGroupCode, EventCode, '1', Report::"Customer - List");
+        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, ReportSetCode, TriggerCode, '1', Report::"Customer - List");
 
         // [THEN] Sequence should be 1
         this.Assert.AreEqual('1', this.AutoPrinting.Sequence, 'First sequence should be 1');
@@ -42,20 +42,20 @@ codeunit 77804 "BJF Automatic Printing Tests"
     [Test]
     internal procedure GetNextSequence_ExistingRecords_IncrementsSequence()
     var
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
         NoRecordErr: Label 'No automatic printing record found';
     begin
         this.AutoPrinting.DeleteAll(false);
 
         // [GIVEN] Existing automatic printing records
-        this.TestUtil.PrepareLabelTestData(LabelGroupCode, EventCode, LabelGroup, EventRec);
-        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, LabelGroupCode, EventCode, '1', Report::"Customer - List");
+        this.TestUtil.PrepareTestData(ReportSetCode, TriggerCode, ReportSet, PrintingTrigger);
+        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, ReportSetCode, TriggerCode, '1', Report::"Customer - List");
 
         // [WHEN] GetNextSequence is called for second record
-        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, LabelGroupCode, EventCode, '2', Report::"Customer - List");
+        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, ReportSetCode, TriggerCode, '2', Report::"Customer - List");
         if not this.AutoPrinting.FindLast() then
             Error(NoRecordErr);
 
@@ -67,13 +67,13 @@ codeunit 77804 "BJF Automatic Printing Tests"
     [Test]
     internal procedure ReportID_Validation_CalculatesReportName()
     var
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
     begin
         // [GIVEN] A new automatic printing record
-        this.TestUtil.PrepareLabelTestData(LabelGroupCode, EventCode, LabelGroup, EventRec);
+        this.TestUtil.PrepareTestData(ReportSetCode, TriggerCode, ReportSet, PrintingTrigger);
 
         // [WHEN] Report ID is set
         this.AutoPrinting.Init();
@@ -87,60 +87,60 @@ codeunit 77804 "BJF Automatic Printing Tests"
     [Test]
     internal procedure QtyToPrint_DefaultValue_IsZero()
     var
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
     begin
         // [GIVEN] A new automatic printing record
-        this.TestUtil.PrepareLabelTestData(LabelGroupCode, EventCode, LabelGroup, EventRec);
+        this.TestUtil.PrepareTestData(ReportSetCode, TriggerCode, ReportSet, PrintingTrigger);
 
         // [WHEN] Record is initialized
-        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, LabelGroupCode, EventCode, '1', Report::"Customer - List");
+        this.TestUtil.CreateTestAutomaticPrinting(this.AutoPrinting, ReportSetCode, TriggerCode, '1', Report::"Customer - List");
 
         // [THEN] Qty to Print should be 0 by default
         this.Assert.AreEqual(0, this.AutoPrinting."Qty to Print", 'Default Qty to Print should be 0');
     end;
 
     [Test]
-    internal procedure LabelGroupNo_Validation_CalculatesLabelGroupName()
+    internal procedure ReportSetNo_Validation_CalculatesReportSetName()
     var
-        LabelGroup: Record "BJF Label Groups";
-        LabelGroupCode: Code[50];
-        LabelGroupName: Text[100];
+        ReportSet: Record "BJF Report Set";
+        ReportSetCode: Code[50];
+        ReportSetName: Text[100];
     begin
-        // [GIVEN] A label group exists
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        LabelGroupName := 'Test Label Group Name';
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, LabelGroupName, "BJF Direct Print Provider".FromInteger(0));
+        // [GIVEN] A report set exists
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        ReportSetName := 'Test Report Set Name';
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, ReportSetName, "BJF Direct Print Provider".FromInteger(0));
 
-        // [WHEN] Label Group No is set
+        // [WHEN] Report Set No is set
         this.AutoPrinting.Init();
-        this.AutoPrinting.Validate("Label Group No.", LabelGroupCode);
+        this.AutoPrinting.Validate("Report Set No.", ReportSetCode);
 
-        // [THEN] Label Group Name flowfield should be calculable
-        this.AutoPrinting.CalcFields("Label Group Name");
-        this.Assert.AreEqual(LabelGroupName, this.AutoPrinting."Label Group Name", 'Label Group Name should match');
+        // [THEN] Report Set Name flowfield should be calculable
+        this.AutoPrinting.CalcFields("Report Set Name");
+        this.Assert.AreEqual(ReportSetName, this.AutoPrinting."Report Set Name", 'Report Set Name should match');
     end;
 
     [Test]
-    procedure EventNo_Validation_CalculatesEventDescription()
+    procedure TriggerNo_Validation_CalculatesTriggerDescription()
     var
-        EventRec: Record "BJF Event";
-        EventCode: Code[50];
-        EventDesc: Text[50];
+        PrintingTrigger: Record "BJF Printing Trigger";
+        TriggerCode: Code[50];
+        TriggerDesc: Text[50];
     begin
-        // [GIVEN] An event exists
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
-        EventDesc := 'Test Event Description';
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, EventDesc, "BJF Direct Print Provider".FromInteger(0));
+        // [GIVEN] A trigger exists
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
+        TriggerDesc := 'Test Trigger Description';
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, TriggerDesc, "BJF Direct Print Provider".FromInteger(0));
 
-        // [WHEN] Event No is set
+        // [WHEN] Trigger No is set
         this.AutoPrinting.Init();
-        this.AutoPrinting.Validate("Event No.", EventCode);
+        this.AutoPrinting.Validate("Trigger No.", TriggerCode);
 
-        // [THEN] Event Description flowfield should be calculable
-        this.AutoPrinting.CalcFields("Event Description");
-        this.Assert.AreEqual(EventDesc, this.AutoPrinting."Event Description", 'Event Description should match');
+        // [THEN] Trigger Description flowfield should be calculable
+        this.AutoPrinting.CalcFields("Trigger Description");
+        this.Assert.AreEqual(TriggerDesc, this.AutoPrinting."Trigger Description", 'Trigger Description should match');
     end;
 }

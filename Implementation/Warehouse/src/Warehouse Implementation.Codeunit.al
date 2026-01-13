@@ -21,8 +21,8 @@ codeunit 77752 "BJF Warehouse Implementation" implements "I-BJF Direct Print Int
 
     procedure RegisterLabelGroups(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Warehouse Label Sets"::"Whse Shipment Posted "), 'Posted Warehouse Shipment Labels', Database::"Posted Whse. Shipment Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Warehouse Label Sets"::"Whse Receipt Posted"), 'Posted Warehouse Receipt Labels', Database::"Posted Whse. Receipt Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Warehouse Label Sets"::"Whse Shipment Posted "), 'Whse Shipment Posted', Database::"Posted Whse. Shipment Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Warehouse Label Sets"::"Whse Receipt Posted"), 'Whse Receipt Posted', Database::"Posted Whse. Receipt Header");
     end;
 
     procedure RegisterEvents(var Helper: Codeunit "BJF Interface Utils")

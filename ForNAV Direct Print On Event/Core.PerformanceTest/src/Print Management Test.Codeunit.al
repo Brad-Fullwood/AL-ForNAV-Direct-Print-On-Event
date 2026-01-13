@@ -25,11 +25,11 @@ codeunit 77823 "BJF Print Management Test" implements "BCPT Test Param. Provider
     local procedure InitTest()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
         AutoPrinting: Record "BJF Automatic Printing";
         Provider: Record "BJF Provider";
-        Dataset: Record "BJF Dataset";
+        SourceTableMapping: Record "BJF Source Table Mapping";
         Params: Text;
     begin
         // Get parameters
@@ -48,49 +48,49 @@ codeunit 77823 "BJF Print Management Test" implements "BCPT Test Param. Provider
             Provider.Insert(true);
         end;
 
-        if not LabelGroup.Get('BJF_MIX') then begin
-            LabelGroup.Init();
-            LabelGroup."No." := 'BJF_MIX';
-            LabelGroup.Description := 'BJF Mixed Operations';
-            LabelGroup."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            LabelGroup.Insert(true);
+        if not ReportSet.Get('BJF_MIX') then begin
+            ReportSet.Init();
+            ReportSet."No." := 'BJF_MIX';
+            ReportSet.Description := 'BJF Mixed Operations';
+            ReportSet."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            ReportSet.Insert(true);
         end;
 
-        if not EventRec.Get('BJF_MIX_EV') then begin
-            EventRec.Init();
-            EventRec."No." := 'BJF_MIX_EV';
-            EventRec.Description := 'BJF Mixed Event';
-            EventRec."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            EventRec.Insert(true);
+        if not PrintingTrigger.Get('BJF_MIX_TR') then begin
+            PrintingTrigger.Init();
+            PrintingTrigger."No." := 'BJF_MIX_TR';
+            PrintingTrigger.Description := 'BJF Mixed Trigger';
+            PrintingTrigger."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            PrintingTrigger.Insert(true);
         end;
 
-        // Create datasets
-        Dataset.SetRange("Provider No.", "BJF Direct Print Provider"::FromInteger(0));
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Label Group");
-        Dataset.SetRange("Entity Code", 'BJF_MIX');
-        if Dataset.IsEmpty() then begin
-            Dataset.Init();
-            Dataset."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            Dataset."Entity Type" := "BJF Dataset Entity Type"::"Label Group";
-            Dataset."Entity Code" := 'BJF_MIX';
-            Dataset."Table No." := Database::Customer;
-            Dataset.Insert(true);
+        // Create source table mappings
+        SourceTableMapping.SetRange("Provider No.", "BJF Direct Print Provider"::FromInteger(0));
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Report Set");
+        SourceTableMapping.SetRange("Source Code", 'BJF_MIX');
+        if SourceTableMapping.IsEmpty() then begin
+            SourceTableMapping.Init();
+            SourceTableMapping."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            SourceTableMapping."Mapping Type" := "BJF Mapping Type"::"Report Set";
+            SourceTableMapping."Source Code" := 'BJF_MIX';
+            SourceTableMapping."Table No." := Database::Customer;
+            SourceTableMapping.Insert(true);
 
-            Dataset.Init();
-            Dataset."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            Dataset."Entity Type" := "BJF Dataset Entity Type"::"Event";
-            Dataset."Entity Code" := 'BJF_MIX_EV';
-            Dataset."Table No." := Database::Customer;
-            Dataset.Insert(true);
+            SourceTableMapping.Init();
+            SourceTableMapping."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            SourceTableMapping."Mapping Type" := "BJF Mapping Type"::"Trigger";
+            SourceTableMapping."Source Code" := 'BJF_MIX_TR';
+            SourceTableMapping."Table No." := Database::Customer;
+            SourceTableMapping.Insert(true);
         end;
 
         // Create automatic printing
-        AutoPrinting.SetRange("Label Group No.", 'BJF_MIX');
-        AutoPrinting.SetRange("Event No.", 'BJF_MIX_EV');
+        AutoPrinting.SetRange("Report Set No.", 'BJF_MIX');
+        AutoPrinting.SetRange("Trigger No.", 'BJF_MIX_TR');
         if AutoPrinting.IsEmpty() then begin
             AutoPrinting.Init();
-            AutoPrinting."Label Group No." := 'BJF_MIX';
-            AutoPrinting."Event No." := 'BJF_MIX_EV';
+            AutoPrinting."Report Set No." := 'BJF_MIX';
+            AutoPrinting."Trigger No." := 'BJF_MIX_TR';
             AutoPrinting.Sequence := '1';
             AutoPrinting."Report ID" := Report::"Customer - List";
             AutoPrinting."Qty to Print" := 1;
@@ -123,7 +123,7 @@ codeunit 77823 "BJF Print Management Test" implements "BCPT Test Param. Provider
         if Customer.FindSet() then begin
             Customer.Next(BJFTestContext.GetRandom(Customer.Count()));
             RecRef.GetTable(Customer);
-            PrintMgmt.QueuePrintLabels(RecRef, 'BJF_MIX', 'BJF_MIX_EV');
+            PrintMgmt.QueuePrintReports(RecRef, 'BJF_MIX', 'BJF_MIX_TR');
             Commit();
         end;
     end;

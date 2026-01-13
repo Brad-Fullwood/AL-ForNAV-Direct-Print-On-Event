@@ -3,8 +3,12 @@ namespace BradFullwood.ForNAV.Core;
 using System.Utilities;
 
 /// <summary>
-/// Page for viewing compatible label sets and events based on dataset mappings.
+/// Page for viewing and managing automatic printing configuration.
 /// </summary>
+/// <remarks>
+/// Shows registered providers, report sets, and printing triggers with their 
+/// compatible source tables for report development.
+/// </remarks>
 page 77701 "BJF Direct Printing Setup"
 {
     ApplicationArea = All;
@@ -18,25 +22,17 @@ page 77701 "BJF Direct Printing Setup"
     {
         area(Content)
         {
-            group(Information)
+            group(SourceTables)
             {
-                Caption = 'Information';
-                label(InfoText)
-                {
-                    Caption = 'This page shows the registered providers, label sets, and events for direct label printing.';
-                    Style = StandardAccent;
-                }
-                label(InfoText2)
-                {
-                    Caption = 'If labels or events that you expect are missing use the "Register Providers" action to register all available providers.';
-                    Style = StandardAccent;
-                }
+                Caption = 'Source Table Mappings';
+                part(SourceTableMappings; "BJF Source Table Mappings") { }
             }
-
-            group(ProviderDetails)
+        }
+        area(FactBoxes)
+        {
+            part(GettingStarted; "BJF Getting Started FactBox")
             {
-                Caption = 'Registered Datasets';
-                part(Datasets; "BJF Datasets") { }
+                Caption = 'Getting Started';
             }
         }
     }
@@ -60,7 +56,7 @@ page 77701 "BJF Direct Printing Setup"
             {
                 ApplicationArea = All;
                 Caption = 'Setup Reports';
-                ToolTip = 'Configure reports for label sets.';
+                ToolTip = 'Configure which reports to print for each report set and trigger combination.';
                 Image = Setup;
                 RunObject = page "BJF Report Selection";
             }
@@ -68,7 +64,7 @@ page 77701 "BJF Direct Printing Setup"
             {
                 ApplicationArea = All;
                 Caption = 'Refresh';
-                ToolTip = 'Refresh the provider list.';
+                ToolTip = 'Refresh the source table mappings.';
                 Image = Refresh;
 
                 trigger OnAction()
@@ -80,7 +76,7 @@ page 77701 "BJF Direct Printing Setup"
             {
                 ApplicationArea = All;
                 Caption = 'Register Providers';
-                ToolTip = 'Register all available label set providers and setup dataset mappings.';
+                ToolTip = 'Register all available providers and create source table mappings.';
                 Image = Register;
 
                 trigger OnAction()
@@ -89,7 +85,7 @@ page 77701 "BJF Direct Printing Setup"
                 begin
                     InterfaceUtils.RegisterAllProviders();
 
-                    Message('Providers registered successfully. Label sets, events, and dataset mappings have been created.');
+                    Message('Providers registered successfully. Report sets, triggers, and source table mappings have been created.');
                     CurrPage.Update(false);
                 end;
             }
@@ -97,14 +93,14 @@ page 77701 "BJF Direct Printing Setup"
             {
                 ApplicationArea = All;
                 Caption = 'Clear Providers';
-                ToolTip = 'Clear all registered label set providers.';
+                ToolTip = 'Clear all registered providers.';
                 Image = Delete;
 
                 trigger OnAction()
                 var
                     InterfaceUtils: Codeunit "BJF Interface Utils";
                     ConfirmMgmt: Codeunit "Confirm Management";
-                    ConfirmQst: Label 'Are you sure you want to clear all registered label set providers? This action cannot be undone.';
+                    ConfirmQst: Label 'Are you sure you want to clear all registered providers? This action cannot be undone.';
                 begin
                     if not ConfirmMgmt.GetResponseOrDefault(ConfirmQst, false) then
                         exit;
@@ -116,16 +112,14 @@ page 77701 "BJF Direct Printing Setup"
         }
         area(Navigation)
         {
-            action(ViewDatasets)
+            action(ViewSourceTables)
             {
                 ApplicationArea = All;
-                Caption = 'View Datasets';
-                ToolTip = 'Open the datasets page.';
+                Caption = 'View Source Tables';
+                ToolTip = 'Open the source table mappings in a separate window.';
                 Image = Database;
-                RunObject = page "BJF Datasets";
+                RunObject = page "BJF Source Table Mappings";
             }
         }
     }
-
-
 }

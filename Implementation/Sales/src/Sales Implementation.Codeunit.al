@@ -22,9 +22,9 @@ codeunit 77734 "BJF Sales Implementation" implements "I-BJF Direct Print Interfa
 
     procedure RegisterLabelGroups(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::Sales), 'Sales Labels', Database::"Sales Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), 'Posted Sales Labels', Database::"Sales Invoice Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), 'Posted Sales Shipment Labels', Database::"Sales Shipment Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::Sales), 'Sales', Database::"Sales Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), 'Sales Posted', Database::"Sales Invoice Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), 'Sales Shipment Posted', Database::"Sales Shipment Header");
     end;
 
     procedure RegisterEvents(var Helper: Codeunit "BJF Interface Utils")

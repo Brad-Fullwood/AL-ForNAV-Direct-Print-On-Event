@@ -4,26 +4,26 @@ using System.Reflection;
 using Microsoft.Foundation.Reporting;
 
 /// <summary>
-/// Table for storing report selections based on label sets.
+/// Table for storing report selections based on report sets.
 /// </summary>
 /// <remarks>
-/// This table manages the configuration of which reports to print for specific label sets
-/// and levels, including customization for different line types and printing sequences.
+/// This table manages the configuration of which reports to print for specific report sets
+/// and printing triggers, including customization for different line types and printing sequences.
 /// </remarks>
 table 77700 "BJF Automatic Printing"
 {
-    Caption = 'Report Selection - Automatic Label Printing';
+    Caption = 'Report Selection - Automatic Printing';
     DataClassification = SystemMetadata;
     InherentPermissions = r;
     Extensible = false;
 
     fields
     {
-        field(1; "Label Group No."; Code[50])
+        field(1; "Report Set No."; Code[50])
         {
-            Caption = 'Label Group No.';
-            ToolTip = 'Specifies the number of the label set associated with this report selection.';
-            TableRelation = "BJF Label Groups"."No.";
+            Caption = 'Report Set No.';
+            ToolTip = 'Specifies the report set (what to print) associated with this report selection.';
+            TableRelation = "BJF Report Set"."No.";
             Editable = false;
             ValidateTableRelation = false;
             AllowInCustomizations = Never;
@@ -31,14 +31,14 @@ table 77700 "BJF Automatic Printing"
 
             trigger OnValidate()
             begin
-                this.CalcFields("Label Group Name");
+                this.CalcFields("Report Set Name");
             end;
         }
-        field(2; "Event No."; Code[50])
+        field(2; "Trigger No."; Code[50])
         {
-            Caption = 'Event No.';
-            ToolTip = 'Specifies the event number associated with this report selection.';
-            TableRelation = "BJF Event"."No.";
+            Caption = 'Trigger No.';
+            ToolTip = 'Specifies the printing trigger (when to print) associated with this report selection.';
+            TableRelation = "BJF Printing Trigger"."No.";
             ValidateTableRelation = false;
             Editable = false;
             AllowInCustomizations = Never;
@@ -46,24 +46,24 @@ table 77700 "BJF Automatic Printing"
 
             trigger OnValidate()
             begin
-                this.CalcFields("Event Description");
+                this.CalcFields("Trigger Description");
             end;
         }
-        field(3; "Label Group Name"; Text[100])
+        field(3; "Report Set Name"; Text[100])
         {
-            Caption = 'Label Group Name';
-            ToolTip = 'Specifies the name of the label set associated with this report selection.';
-            CalcFormula = lookup("BJF Label Groups"."Description" where("No." = field("Label Group No.")));
+            Caption = 'Report Set Name';
+            ToolTip = 'Specifies the name of the report set associated with this report selection.';
+            CalcFormula = lookup("BJF Report Set"."Description" where("No." = field("Report Set No.")));
             FieldClass = FlowField;
             Editable = false;
             AllowInCustomizations = Always;
         }
-        field(13; "Event Description"; Text[50])
+        field(13; "Trigger Description"; Text[50])
         {
-            Caption = 'Event Description';
-            ToolTip = 'Specifies the description of the event associated with this report selection.';
+            Caption = 'Trigger Description';
+            ToolTip = 'Specifies the description of the printing trigger associated with this report selection.';
             FieldClass = FlowField;
-            CalcFormula = lookup("BJF Event"."Description" where("No." = field("Event No.")));
+            CalcFormula = lookup("BJF Printing Trigger"."Description" where("No." = field("Trigger No.")));
             Editable = false;
         }
         field(14; Sequence; Code[10])
@@ -187,7 +187,7 @@ table 77700 "BJF Automatic Printing"
 
     keys
     {
-        key(PK; "Label Group No.", "Event No.", Sequence)
+        key(PK; "Report Set No.", "Trigger No.", Sequence)
         {
             Clustered = true;
         }
@@ -203,7 +203,7 @@ table 77700 "BJF Automatic Printing"
     var
         AutoPrintLookup: Record "BJF Automatic Printing";
     begin
-        AutoPrintLookup.SetRange("Label Group No.", "Label Group No.");
+        AutoPrintLookup.SetRange("Report Set No.", "Report Set No.");
         if AutoPrintLookup.FindLast() and (AutoPrintLookup.Sequence <> '') then
             this.Sequence := IncStr(AutoPrintLookup.Sequence)
         else
@@ -214,8 +214,8 @@ table 77700 "BJF Automatic Printing"
     var
         AutoPrintLookup: Record "BJF Automatic Printing";
     begin
-        AutoPrintLookup.SetRange("Label Group No.", "Label Group No.");
-        AutoPrintLookup.SetRange("Event No.", "Event No.");
+        AutoPrintLookup.SetRange("Report Set No.", "Report Set No.");
+        AutoPrintLookup.SetRange("Trigger No.", "Trigger No.");
         if AutoPrintLookup.FindLast() and (AutoPrintLookup.Sequence <> '') then
             this.Sequence := IncStr(AutoPrintLookup.Sequence)
         else

@@ -1,16 +1,18 @@
 namespace BradFullwood.ForNAV.Tests;
 
+using BradFullwood.ForNAV.Core;
+
 /// <summary>
 /// Test utilities codeunit for Core extension tests.
 /// Provides helper methods for test data creation and common assertions.
 /// </summary>
-codeunit 77807 "BJF Test Utilities"
+codeunit 77707 "BJF Test Utilities"
 {
     Access = Internal;
     Permissions = tabledata "BJF Provider" = RIMD,
-                 tabledata "BJF Label Groups" = RIMD,
-                 tabledata "BJF Event" = RIMD,
-                 tabledata "BJF Dataset" = RIMD,
+                 tabledata "BJF Report Set" = RIMD,
+                 tabledata "BJF Printing Trigger" = RIMD,
+                 tabledata "BJF Source Table Mapping" = RIMD,
                  tabledata "BJF Automatic Printing" = RIMD,
                  tabledata "BJF Print Buffer" = RIMD;
 
@@ -19,18 +21,18 @@ codeunit 77807 "BJF Test Utilities"
         Any: Codeunit Any;
 
     /// <summary>
-    /// Prepares test data for label group and event.
+    /// Prepares test data for report set and trigger.
     /// </summary>
-    /// <param name="LabelGroupCode">The code of the label group to create.</param>
-    /// <param name="EventCode">The code of the event to create.</param>
-    /// <param name="LabelGroup">The label group record to create.</param>
-    /// <param name="EventRec">The event record to create.</param>
-    procedure PrepareLabelTestData(var LabelGroupCode: Code[50]; var EventCode: Code[50]; LabelGroup: Record "BJF Label Groups"; EventRec: Record "BJF Event")
+    /// <param name="ReportSetCode">The code of the report set to create.</param>
+    /// <param name="TriggerCode">The code of the trigger to create.</param>
+    /// <param name="ReportSet">The report set record to create.</param>
+    /// <param name="PrintingTrigger">The printing trigger record to create.</param>
+    procedure PrepareTestData(var ReportSetCode: Code[50]; var TriggerCode: Code[50]; ReportSet: Record "BJF Report Set"; PrintingTrigger: Record "BJF Printing Trigger")
     begin
-        LabelGroupCode := this.GenerateRandomCode('LG');
-        EventCode := this.GenerateRandomCode('EV');
-        LabelGroup := this.CreateTestLabelGroup(LabelGroupCode, 'Test Label', "BJF Direct Print Provider".FromInteger(0));
-        EventRec := this.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider".FromInteger(0));
+        ReportSetCode := this.GenerateRandomCode('RS');
+        TriggerCode := this.GenerateRandomCode('TR');
+        ReportSet := this.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider".FromInteger(0));
+        PrintingTrigger := this.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider".FromInteger(0));
     end;
 
     /// <summary>
@@ -49,59 +51,85 @@ codeunit 77807 "BJF Test Utilities"
     end;
 
     /// <summary>
-    /// Creates a test label group.
+    /// Creates a test report set.
     /// </summary>
-    procedure CreateTestLabelGroup(LabelGroupNo: Code[50]; Description: Text[100]; ProviderNo: Enum "BJF Direct Print Provider"): Record "BJF Label Groups"
+    procedure CreateTestReportSet(ReportSetNo: Code[50]; Description: Text[100]; ProviderNo: Enum "BJF Direct Print Provider"): Record "BJF Report Set"
     var
-        LabelGroup: Record "BJF Label Groups";
+        ReportSet: Record "BJF Report Set";
     begin
-        LabelGroup.Init();
-        LabelGroup."No." := LabelGroupNo;
-        LabelGroup.Description := Description;
-        LabelGroup."Provider No." := ProviderNo;
-        LabelGroup.Insert(true);
-        exit(LabelGroup);
+        ReportSet.Init();
+        ReportSet."No." := ReportSetNo;
+        ReportSet.Description := Description;
+        ReportSet."Provider No." := ProviderNo;
+        ReportSet.Insert(true);
+        exit(ReportSet);
     end;
 
     /// <summary>
-    /// Creates a test event.
+    /// Creates a test printing trigger.
     /// </summary>
-    procedure CreateTestEvent(EventNo: Code[50]; Description: Text[50]; ProviderNo: Enum "BJF Direct Print Provider"): Record "BJF Event"
+    procedure CreateTestTrigger(TriggerNo: Code[50]; Description: Text[50]; ProviderNo: Enum "BJF Direct Print Provider"): Record "BJF Printing Trigger"
     var
-        EventRec: Record "BJF Event";
+        PrintingTrigger: Record "BJF Printing Trigger";
     begin
-        EventRec.Init();
-        EventRec."No." := EventNo;
-        EventRec.Description := Description;
-        EventRec."Provider No." := ProviderNo;
-        EventRec.Insert(true);
-        exit(EventRec);
+        PrintingTrigger.Init();
+        PrintingTrigger."No." := TriggerNo;
+        PrintingTrigger.Description := Description;
+        PrintingTrigger."Provider No." := ProviderNo;
+        PrintingTrigger.Insert(true);
+        exit(PrintingTrigger);
     end;
 
     /// <summary>
-    /// Creates a test dataset entry.
+    /// Creates a test source table mapping entry.
     /// </summary>
-    procedure CreateTestDataset(ProviderNo: Enum "BJF Direct Print Provider"; EntityType: Enum "BJF Dataset Entity Type"; EntityCode: Code[50]; TableNo: Integer): Record "BJF Dataset"
+    procedure CreateTestSourceTableMapping(ProviderNo: Enum "BJF Direct Print Provider"; MappingType: Enum "BJF Mapping Type"; SourceCode: Code[50]; TableNo: Integer): Record "BJF Source Table Mapping"
     var
-        Dataset: Record "BJF Dataset";
+        SourceTableMapping: Record "BJF Source Table Mapping";
     begin
-        Dataset.Init();
-        Dataset."Provider No." := ProviderNo;
-        Dataset."Entity Type" := EntityType;
-        Dataset."Entity Code" := EntityCode;
-        Dataset."Table No." := TableNo;
-        Dataset.Insert(true);
-        exit(Dataset);
+        SourceTableMapping.Init();
+        SourceTableMapping."Provider No." := ProviderNo;
+        SourceTableMapping."Mapping Type" := MappingType;
+        SourceTableMapping."Source Code" := SourceCode;
+        SourceTableMapping."Table No." := TableNo;
+        SourceTableMapping."Source Description" := this.GetSourceDescription(ProviderNo, MappingType, SourceCode);
+        SourceTableMapping.Indentation := 1;
+        SourceTableMapping.Insert(true);
+        exit(SourceTableMapping);
+    end;
+
+    local procedure GetSourceDescription(Provider: Enum "BJF Direct Print Provider"; MappingType: Enum "BJF Mapping Type"; SourceCode: Code[50]): Text[250]
+    var
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSet: Record "BJF Report Set";
+    begin
+        case MappingType of
+            Enum::"BJF Mapping Type"::"Trigger":
+                begin
+                    PrintingTrigger.SetRange("Provider No.", Provider);
+                    PrintingTrigger.SetRange("No.", SourceCode);
+                    if PrintingTrigger.FindFirst() then
+                        exit(PrintingTrigger.Description);
+                end;
+            Enum::"BJF Mapping Type"::"Report Set":
+                begin
+                    ReportSet.SetRange("Provider No.", Provider);
+                    ReportSet.SetRange("No.", SourceCode);
+                    if ReportSet.FindFirst() then
+                        exit(ReportSet.Description);
+                end;
+        end;
+        exit('');
     end;
 
     /// <summary>
     /// Creates a test automatic printing configuration.
     /// </summary>
-    procedure CreateTestAutomaticPrinting(var AutoPrinting: Record "BJF Automatic Printing"; LabelGroupNo: Code[50]; EventNo: Code[50]; Sequence: Code[10]; ReportID: Integer): Record "BJF Automatic Printing"
+    procedure CreateTestAutomaticPrinting(var AutoPrinting: Record "BJF Automatic Printing"; ReportSetNo: Code[50]; TriggerNo: Code[50]; Sequence: Code[10]; ReportID: Integer): Record "BJF Automatic Printing"
     begin
         AutoPrinting.Init();
-        AutoPrinting."Label Group No." := LabelGroupNo;
-        AutoPrinting."Event No." := EventNo;
+        AutoPrinting."Report Set No." := ReportSetNo;
+        AutoPrinting."Trigger No." := TriggerNo;
         AutoPrinting.Sequence := Sequence;
         AutoPrinting."Report ID" := ReportID;
         AutoPrinting."Qty to Print" := 1;

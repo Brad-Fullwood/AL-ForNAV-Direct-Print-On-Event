@@ -3,8 +3,8 @@ namespace BradFullwood.ForNAV.PerformanceTest;
 using System.Tooling;
 
 /// <summary>
-/// BJF test for QueuePrintLabels performance.
-/// Simulates high-volume label printing operations.
+/// BJF test for QueuePrintReports performance.
+/// Simulates high-volume report printing operations.
 /// </summary>
 codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
 {
@@ -13,25 +13,25 @@ codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
     trigger OnRun()
     begin
         this.InitTest();
-        this.QueuePrintLabels();
+        this.QueuePrintReports();
     end;
 
     var
         BJFTestContext: Codeunit "BCPT Test Context";
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
-        LabelGroupParamLbl: Label 'Label Group Code';
-        EventParamLbl: Label 'Event Code';
-        ParamValidationErr: Label 'Parameters not defined correctly. Expected format: "%1,%2"', Comment = '%1 = Label Group Param, %2 = Event Param';
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
+        ReportSetParamLbl: Label 'Report Set Code';
+        TriggerParamLbl: Label 'Trigger Code';
+        ParamValidationErr: Label 'Parameters not defined correctly. Expected format: "%1,%2"', Comment = '%1 = Report Set Param, %2 = Trigger Param';
 
     local procedure InitTest()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
         AutoPrinting: Record "BJF Automatic Printing";
         Provider: Record "BJF Provider";
-        Dataset: Record "BJF Dataset";
+        SourceTableMapping: Record "BJF Source Table Mapping";
         Params: Text;
     begin
         // Get parameters
@@ -48,60 +48,60 @@ codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
             Provider.Insert(true);
         end;
 
-        if LabelGroupCode = '' then
-            LabelGroupCode := 'BJF_LG';
+        if ReportSetCode = '' then
+            ReportSetCode := 'BJF_RS';
 
-        if not LabelGroup.Get(LabelGroupCode) then begin
-            LabelGroup.Init();
-            LabelGroup."No." := LabelGroupCode;
-            LabelGroup.Description := 'BJF Test Label Group';
-            LabelGroup."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            LabelGroup.Insert(true);
+        if not ReportSet.Get(ReportSetCode) then begin
+            ReportSet.Init();
+            ReportSet."No." := ReportSetCode;
+            ReportSet.Description := 'BJF Test Report Set';
+            ReportSet."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            ReportSet.Insert(true);
         end;
 
-        if EventCode = '' then
-            EventCode := 'BJF_EV';
+        if TriggerCode = '' then
+            TriggerCode := 'BJF_TR';
 
-        if not EventRec.Get(EventCode) then begin
-            EventRec.Init();
-            EventRec."No." := EventCode;
-            EventRec.Description := 'BJF Test Event';
-            EventRec."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            EventRec.Insert(true);
+        if not PrintingTrigger.Get(TriggerCode) then begin
+            PrintingTrigger.Init();
+            PrintingTrigger."No." := TriggerCode;
+            PrintingTrigger.Description := 'BJF Test Trigger';
+            PrintingTrigger."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            PrintingTrigger.Insert(true);
         end;
 
-        // Create datasets if not exist
-        Dataset.SetRange("Provider No.", "BJF Direct Print Provider"::FromInteger(0));
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Label Group");
-        Dataset.SetRange("Entity Code", LabelGroupCode);
-        Dataset.SetRange("Table No.", Database::Customer);
-        if Dataset.IsEmpty() then begin
-            Dataset.Init();
-            Dataset."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            Dataset."Entity Type" := "BJF Dataset Entity Type"::"Label Group";
-            Dataset."Entity Code" := LabelGroupCode;
-            Dataset."Table No." := Database::Customer;
-            Dataset.Insert(true);
+        // Create source table mappings if not exist
+        SourceTableMapping.SetRange("Provider No.", "BJF Direct Print Provider"::FromInteger(0));
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Report Set");
+        SourceTableMapping.SetRange("Source Code", ReportSetCode);
+        SourceTableMapping.SetRange("Table No.", Database::Customer);
+        if SourceTableMapping.IsEmpty() then begin
+            SourceTableMapping.Init();
+            SourceTableMapping."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            SourceTableMapping."Mapping Type" := "BJF Mapping Type"::"Report Set";
+            SourceTableMapping."Source Code" := ReportSetCode;
+            SourceTableMapping."Table No." := Database::Customer;
+            SourceTableMapping.Insert(true);
         end;
 
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Event");
-        Dataset.SetRange("Entity Code", EventCode);
-        if Dataset.IsEmpty() then begin
-            Dataset.Init();
-            Dataset."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
-            Dataset."Entity Type" := "BJF Dataset Entity Type"::"Event";
-            Dataset."Entity Code" := EventCode;
-            Dataset."Table No." := Database::Customer;
-            Dataset.Insert(true);
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Trigger");
+        SourceTableMapping.SetRange("Source Code", TriggerCode);
+        if SourceTableMapping.IsEmpty() then begin
+            SourceTableMapping.Init();
+            SourceTableMapping."Provider No." := "BJF Direct Print Provider"::FromInteger(0);
+            SourceTableMapping."Mapping Type" := "BJF Mapping Type"::"Trigger";
+            SourceTableMapping."Source Code" := TriggerCode;
+            SourceTableMapping."Table No." := Database::Customer;
+            SourceTableMapping.Insert(true);
         end;
 
         // Create automatic printing if not exists
-        AutoPrinting.SetRange("Label Group No.", LabelGroupCode);
-        AutoPrinting.SetRange("Event No.", EventCode);
+        AutoPrinting.SetRange("Report Set No.", ReportSetCode);
+        AutoPrinting.SetRange("Trigger No.", TriggerCode);
         if AutoPrinting.IsEmpty() then begin
             AutoPrinting.Init();
-            AutoPrinting."Label Group No." := LabelGroupCode;
-            AutoPrinting."Event No." := EventCode;
+            AutoPrinting."Report Set No." := ReportSetCode;
+            AutoPrinting."Trigger No." := TriggerCode;
             AutoPrinting.Sequence := '1';
             AutoPrinting."Report ID" := Report::"Customer - List";
             AutoPrinting."Qty to Print" := 1;
@@ -109,7 +109,7 @@ codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
         end;
     end;
 
-    local procedure QueuePrintLabels()
+    local procedure QueuePrintReports()
     var
         PrintMgmt: Codeunit "BJF Print Management";
         Customer: Record Customer;
@@ -120,8 +120,8 @@ codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
             Customer.Next(BJFTestContext.GetRandom(Customer.Count()));
             RecRef.GetTable(Customer);
 
-            // Queue print labels
-            PrintMgmt.QueuePrintLabels(RecRef, LabelGroupCode, EventCode);
+            // Queue print reports
+            PrintMgmt.QueuePrintReports(RecRef, ReportSetCode, TriggerCode);
 
             // Commit to ensure buffer is persisted
             Commit();
@@ -137,15 +137,15 @@ codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
         Parts := Params.Split(Delimiter);
 
         if Parts.Count() >= 1 then
-            LabelGroupCode := CopyStr(Parts.Get(1), 1, 50);
+            ReportSetCode := CopyStr(Parts.Get(1), 1, 50);
 
         if Parts.Count() >= 2 then
-            EventCode := CopyStr(Parts.Get(2), 1, 50);
+            TriggerCode := CopyStr(Parts.Get(2), 1, 50);
     end;
 
     procedure GetDefaultParameters(): Text[1000]
     begin
-        exit(CopyStr(StrSubstNo('%1,%2', 'BJF_LG', 'BJF_EV'), 1, 1000));
+        exit(CopyStr(StrSubstNo('%1,%2', 'BJF_RS', 'BJF_TR'), 1, 1000));
     end;
 
     procedure ValidateParameters(Parameters: Text[1000])
@@ -154,6 +154,6 @@ codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
     begin
         Parts := Parameters.Split(',');
         if Parts.Count() < 2 then
-            Error(ParamValidationErr, LabelGroupParamLbl, EventParamLbl);
+            Error(ParamValidationErr, ReportSetParamLbl, TriggerParamLbl);
     end;
 }

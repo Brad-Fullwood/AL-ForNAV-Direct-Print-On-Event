@@ -3,25 +3,25 @@ namespace BradFullwood.ForNAV.Core;
 using System.Reflection;
 
 /// <summary>
-/// Page for managing report selections for label sets.
+/// Page for managing report selections for report sets.
 /// </summary>
 /// <remarks>
-/// This page allows users to configure which reports should be printed for specific label sets and levels,
-/// with support for different line types and printing sequences.
+/// This page allows users to configure which reports should be printed for specific report sets
+/// and printing triggers, with support for different line types and printing sequences.
 /// </remarks>
 page 77704 "BJF Report Selection"
 {
     ApplicationArea = Basic, Suite;
-    Caption = 'Report Selection - Automatic Label Printing';
+    Caption = 'Report Selection - Automatic Printing';
     PageType = Worksheet;
     SaveValues = true;
     SourceTable = "BJF Automatic Printing";
     UsageCategory = Administration;
     Extensible = false;
-    SourceTableView = sorting("Label Group No.", "Event No.", Sequence) order(descending);
-    Permissions = tabledata "BJF Event" = r,
-                  tabledata "BJF Label Groups" = r,
-                  tabledata "BJF Dataset" = r;
+    SourceTableView = sorting("Report Set No.", "Trigger No.", Sequence) order(descending);
+    Permissions = tabledata "BJF Printing Trigger" = r,
+                  tabledata "BJF Report Set" = r,
+                  tabledata "BJF Source Table Mapping" = r;
 
     layout
     {
@@ -30,21 +30,21 @@ page 77704 "BJF Report Selection"
             group(Filters)
             {
                 Caption = 'Filters';
-                field("Label Group"; this.LabelSetDescription)
+                field("Report Set"; this.ReportSetDescription)
                 {
-                    Caption = 'Label Group';
-                    ToolTip = 'Specifies the Label Group.';
-                    TableRelation = "BJF Label Groups".Description;
+                    Caption = 'Report Set';
+                    ToolTip = 'Specifies the Report Set (what to print).';
+                    TableRelation = "BJF Report Set".Description;
 
                     trigger OnLookup(var Text: Text): Boolean
                     var
-                        LabelSet: Record "BJF Label Groups";
+                        ReportSet: Record "BJF Report Set";
                     begin
-                        LabelSet.Reset();
-                        if not (Page.RunModal(Page::"BJF Label Groups", LabelSet) = Action::LookupOK) then
+                        ReportSet.Reset();
+                        if not (Page.RunModal(Page::"BJF Report Sets", ReportSet) = Action::LookupOK) then
                             exit;
-                        this.LookUpLabelSet := LabelSet."No.";
-                        this.LabelSetDescription := LabelSet.Description;
+                        this.LookUpReportSet := ReportSet."No.";
+                        this.ReportSetDescription := ReportSet.Description;
                         this.SetUsageFilter();
                     end;
                 }
@@ -59,12 +59,12 @@ page 77704 "BJF Report Selection"
                 {
                     Caption = 'Sequence';
                     ToolTip = 'Specifies the printing sequence order.';
-                    Editable = Rec."Label Group No." <> '';
+                    Editable = Rec."Report Set No." <> '';
                 }
 
                 field("Report ID"; Rec."Report ID")
                 {
-                    Editable = Rec."Label Group No." <> '';
+                    Editable = Rec."Report Set No." <> '';
                     LookupPageId = Objects;
                     ShowMandatory = true;
                 }
@@ -73,32 +73,34 @@ page 77704 "BJF Report Selection"
                     DrillDown = false;
                     LookupPageId = Objects;
                 }
-                field("Event Description"; Rec."Event Description")
+                field("Trigger Description"; Rec."Trigger Description")
                 {
+                    Caption = 'Trigger';
+                    ToolTip = 'Specifies the printing trigger (when to print).';
                     ShowMandatory = true;
 
                     trigger OnLookup(var Text: Text) Result: Boolean
                     var
-                        LabelEvent: Record "BJF Event";
+                        PrintingTrigger: Record "BJF Printing Trigger";
                         ValidTableNos: List of [Integer];
                     begin
-                        LabelEvent.Reset();
+                        PrintingTrigger.Reset();
 
-                        // Early exit if no label set selected
-                        if this.LookUpLabelSet = '' then
-                            exit(this.ShowEventLookup(LabelEvent));
+                        // Early exit if no report set selected
+                        if this.LookUpReportSet = '' then
+                            exit(this.ShowTriggerLookup(PrintingTrigger));
 
                         this.GetValidTableNumbers(ValidTableNos);
 
-                        // Show all events if no valid tables found or if filtering would be too restrictive
+                        // Show all triggers if no valid tables found or if filtering would be too restrictive
                         if ValidTableNos.Count() = 0 then
-                            exit(this.ShowEventLookup(LabelEvent));
+                            exit(this.ShowTriggerLookup(PrintingTrigger));
 
                         // Only apply filtering if we have valid table numbers
-                        this.MarkValidEvents(LabelEvent, ValidTableNos);
-                        LabelEvent.MarkedOnly := true;
+                        this.MarkValidTriggers(PrintingTrigger, ValidTableNos);
+                        PrintingTrigger.MarkedOnly := true;
 
-                        Result := this.ShowEventLookup(LabelEvent);
+                        Result := this.ShowTriggerLookup(PrintingTrigger);
                         if not Result then
                             exit;
                         Rec.GetNextSequence();
@@ -121,7 +123,7 @@ page 77704 "BJF Report Selection"
                 field("Report Layout Publisher"; Rec."Report Layout Publisher") { }
                 field("Qty to Print"; Rec."Qty to Print")
                 {
-                    Editable = Rec."Label Group No." <> '';
+                    Editable = Rec."Report Set No." <> '';
                 }
             }
         }
@@ -146,8 +148,8 @@ page 77704 "BJF Report Selection"
         {
             action(ClearAllSelections)
             {
-                Caption = 'Delete all report selections for label sets.';
-                ToolTip = 'Deletes all report selections for label sets.';
+                Caption = 'Delete all report selections.';
+                ToolTip = 'Deletes all report selections for all report sets.';
                 Image = Delete;
 
                 trigger OnAction()
@@ -172,102 +174,102 @@ page 77704 "BJF Report Selection"
 
     trigger OnNewRecord(BelowRec: Boolean)
     begin
-        Rec.Validate("Label Group No.", this.LookUpLabelSet);
+        Rec.Validate("Report Set No.", this.LookUpReportSet);
         Rec.NewRecord();
     end;
 
     var
-        LookUpLabelSet: Code[50];
-        LabelSetDescription: Text[100];
+        LookUpReportSet: Code[50];
+        ReportSetDescription: Text[100];
         IsInitialized: Boolean;
 
     local procedure InitUsageFilter()
     var
-        LabelSet: Record "BJF Label Groups";
+        ReportSet: Record "BJF Report Set";
     begin
-        if Rec.GetFilter("Label Group No.") = '' then
+        if Rec.GetFilter("Report Set No.") = '' then
             exit;
-        if not LabelSet.Get(CopyStr(Rec.GetFilter("Label Group No."), 1, MaxStrLen(LabelSet."No."))) then
+        if not ReportSet.Get(CopyStr(Rec.GetFilter("Report Set No."), 1, MaxStrLen(ReportSet."No."))) then
             exit;
-        this.LookUpLabelSet := LabelSet."No.";
-        this.LabelSetDescription := LabelSet.Description;
+        this.LookUpReportSet := ReportSet."No.";
+        this.ReportSetDescription := ReportSet.Description;
 
         // Ensure the current record is properly initialized
-        if Rec."Label Group No." = '' then
-            Rec.Validate("Label Group No.", this.LookUpLabelSet);
+        if Rec."Report Set No." = '' then
+            Rec.Validate("Report Set No.", this.LookUpReportSet);
     end;
 
     local procedure GetValidTableNumbers(var ValidTableNos: List of [Integer])
     var
-        Dataset: Record "BJF Dataset";
+        SourceTableMapping: Record "BJF Source Table Mapping";
     begin
-        Dataset.Reset();
-        Dataset.SetRange("Entity Type", Enum::"BJF Dataset Entity Type"::"Label Group"); // 1 = LabelSet
-        Dataset.SetRange("Entity Code", this.LookUpLabelSet);
-        if not Dataset.FindSet() then
+        SourceTableMapping.Reset();
+        SourceTableMapping.SetRange("Mapping Type", Enum::"BJF Mapping Type"::"Report Set");
+        SourceTableMapping.SetRange("Source Code", this.LookUpReportSet);
+        if not SourceTableMapping.FindSet() then
             exit;
 
         repeat
-            ValidTableNos.Add(Dataset."Table No.");
-        until Dataset.Next() = 0;
+            ValidTableNos.Add(SourceTableMapping."Table No.");
+        until SourceTableMapping.Next() = 0;
     end;
 
-    local procedure MarkValidEvents(var LabelEvent: Record "BJF Event"; ValidTableNos: List of [Integer])
+    local procedure MarkValidTriggers(var PrintingTrigger: Record "BJF Printing Trigger"; ValidTableNos: List of [Integer])
     begin
-        if not LabelEvent.FindSet() then
+        if not PrintingTrigger.FindSet() then
             exit;
 
         repeat
-            if this.IsEventValidForTables(LabelEvent, ValidTableNos) then
-                LabelEvent.Mark := true;
-        until LabelEvent.Next() = 0;
+            if this.IsTriggerValidForTables(PrintingTrigger, ValidTableNos) then
+                PrintingTrigger.Mark := true;
+        until PrintingTrigger.Next() = 0;
     end;
 
-    local procedure IsEventValidForTables(LabelEvent: Record "BJF Event"; ValidTableNos: List of [Integer]): Boolean
+    local procedure IsTriggerValidForTables(PrintingTrigger: Record "BJF Printing Trigger"; ValidTableNos: List of [Integer]): Boolean
     var
-        Dataset: Record "BJF Dataset";
+        SourceTableMapping: Record "BJF Source Table Mapping";
     begin
-        Dataset.Reset();
-        Dataset.SetRange("Entity Type", Enum::"BJF Dataset Entity Type"::"Event");
-        Dataset.SetRange("Entity Code", LabelEvent."No.");
-        Dataset.SetRange("Provider No.", LabelEvent."Provider No.");
+        SourceTableMapping.Reset();
+        SourceTableMapping.SetRange("Mapping Type", Enum::"BJF Mapping Type"::"Trigger");
+        SourceTableMapping.SetRange("Source Code", PrintingTrigger."No.");
+        SourceTableMapping.SetRange("Provider No.", PrintingTrigger."Provider No.");
 
-        if not Dataset.FindSet() then
+        if not SourceTableMapping.FindSet() then
             exit(false);
 
         repeat
-            if ValidTableNos.Contains(Dataset."Table No.") then
+            if ValidTableNos.Contains(SourceTableMapping."Table No.") then
                 exit(true);
-        until Dataset.Next() = 0;
+        until SourceTableMapping.Next() = 0;
 
         exit(false);
     end;
 
-    local procedure ShowEventLookup(var LabelEvent: Record "BJF Event"): Boolean
+    local procedure ShowTriggerLookup(var PrintingTrigger: Record "BJF Printing Trigger"): Boolean
     begin
-        if not (Page.RunModal(Page::"BJF Label Event", LabelEvent) = Action::LookupOK) then
+        if not (Page.RunModal(Page::"BJF Printing Triggers", PrintingTrigger) = Action::LookupOK) then
             exit(false);
 
-        Rec."Event No." := LabelEvent."No.";
+        Rec."Trigger No." := PrintingTrigger."No.";
         exit(true);
     end;
 
     local procedure SetUsageFilter()
     var
-        LabelSet: Record "BJF Label Groups";
+        ReportSet: Record "BJF Report Set";
     begin
         Rec.FilterGroup(2);
-        Rec.SetRange("Label Group No.", this.LookUpLabelSet);
+        Rec.SetRange("Report Set No.", this.LookUpReportSet);
 
-        // Update the page caption with the label set name
-        if (this.LookUpLabelSet <> '') and (LabelSet.Get(this.LookUpLabelSet)) then
-            CurrPage.Caption := StrSubstNo('%1 - %2', CurrPage.Caption(), LabelSet.Description);
+        // Update the page caption with the report set name
+        if (this.LookUpReportSet <> '') and (ReportSet.Get(this.LookUpReportSet)) then
+            CurrPage.Caption := StrSubstNo('%1 - %2', CurrPage.Caption(), ReportSet.Description);
 
         Rec.FilterGroup(0);
 
-        // Ensure the current record has the label set number set
-        if (this.LookUpLabelSet <> '') and (Rec."Label Group No." = '') then
-            Rec.Validate("Label Group No.", this.LookUpLabelSet);
+        // Ensure the current record has the report set number set
+        if (this.LookUpReportSet <> '') and (Rec."Report Set No." = '') then
+            Rec.Validate("Report Set No.", this.LookUpReportSet);
 
         if this.IsInitialized then
             CurrPage.Update(true);

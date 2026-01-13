@@ -5,51 +5,51 @@ using Microsoft.Sales.Reports;
 
 /// <summary>
 /// Test codeunit for BJF Print Management (77702).
-/// Tests QueuePrintLabels, PopulateBufferWithContext, IsEventEnabledForLabelGroup, and event subscribers.
+/// Tests QueuePrintReports, PopulateBufferWithContext, IsTriggerEnabledForReportSet, and event subscribers.
 /// </summary>
-codeunit 77800 "BJF Print Management Tests"
+codeunit 77700 "BJF Print Management Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;
     InherentPermissions = x;
-    Permissions = tabledata "BJF Label Groups" = RIMD,
-                 tabledata "BJF Event" = RIMD,
+    Permissions = tabledata "BJF Report Set" = RIMD,
+                 tabledata "BJF Printing Trigger" = RIMD,
                  tabledata "BJF Automatic Printing" = RIMD,
                  tabledata "BJF Print Buffer" = RIMD,
-                 tabledata "BJF Dataset" = RIMD,
+                 tabledata "BJF Source Table Mapping" = RIMD,
                  tabledata Customer = R;
     var
         TestUtil: Codeunit "BJF Test Utilities";
         Assert: Codeunit "Library Assert";
 
     [Test]
-    internal procedure QueuePrintLabels_ValidEvent_CreatesBufferEntry()
+    internal procedure QueuePrintReports_ValidTrigger_CreatesBufferEntry()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
         AutoPrinting: Record "BJF Automatic Printing";
         PrintBuffer: Record "BJF Print Buffer";
         Customer: Record Customer;
         RecRef: RecordRef;
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
     begin
-        // [GIVEN] A valid label group, event, and automatic printing configuration
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        // [GIVEN] A valid report set, trigger, and automatic printing configuration
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Test Label Group', "BJF Direct Print Provider"::FromInteger(0));
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Label Group", LabelGroupCode, Database::Customer);
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Event", EventCode, Database::Customer);
-        AutoPrinting := this.TestUtil.CreateTestAutomaticPrinting(LabelGroupCode, EventCode, '1', Report::"Standard Sales - Invoice");
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider"::FromInteger(0));
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Report Set", ReportSetCode, Database::Customer);
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Trigger", TriggerCode, Database::Customer);
+        AutoPrinting := this.TestUtil.CreateTestAutomaticPrinting(ReportSetCode, TriggerCode, '1', Report::"Standard Sales - Invoice");
 
         Customer.FindFirst();
         RecRef.GetTable(Customer);
 
-        // [WHEN] QueuePrintLabels is called
-        PrintMgmt.QueuePrintLabels(RecRef, LabelGroupCode, EventCode);
+        // [WHEN] QueuePrintReports is called
+        PrintMgmt.QueuePrintReports(RecRef, ReportSetCode, TriggerCode);
 
         // [THEN] A print buffer entry should be created
         PrintBuffer.SetRange("Report ID", Report::"Standard Sales - Invoice");
@@ -58,63 +58,63 @@ codeunit 77800 "BJF Print Management Tests"
     end;
 
     [Test]
-    internal procedure QueuePrintLabels_EventNotEnabled_ReturnsError()
+    internal procedure QueuePrintReports_TriggerNotEnabled_ReturnsError()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
         Customer: Record Customer;
         RecRef: RecordRef;
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
         ErrorOccurred: Boolean;
     begin
-        // [GIVEN] A label group without enabled event
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        // [GIVEN] A report set without enabled trigger
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Test Label Group', "BJF Direct Print Provider"::FromInteger(0));
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
-        // Note: No AutoPrinting record = event not enabled for this label group
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider"::FromInteger(0));
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
+        // Note: No AutoPrinting record = trigger not enabled for this report set
 
         Customer.FindFirst();
         RecRef.GetTable(Customer);
 
-        // [WHEN] QueuePrintLabels is called
+        // [WHEN] QueuePrintReports is called
         ErrorOccurred := false;
         ClearLastError();
-        PrintMgmt.QueuePrintLabels(RecRef, LabelGroupCode, EventCode);
+        PrintMgmt.QueuePrintReports(RecRef, ReportSetCode, TriggerCode);
 
-        // [THEN] Should handle the error gracefully (via OnAfterQueuePrintLabels event)
+        // [THEN] Should handle the error gracefully (via OnAfterQueuePrintReports event)
         // No exception should be thrown to the caller
         this.Assert.AreEqual('', GetLastError(), 'No error should be raised to caller');
 
     end;
 
     [Test]
-    internal procedure QueuePrintLabels_NoReportsConfigured_ReturnsError()
+    internal procedure QueuePrintReports_NoReportsConfigured_ReturnsError()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
         AutoPrinting: Record "BJF Automatic Printing";
         Customer: Record Customer;
         RecRef: RecordRef;
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
     begin
-        // [GIVEN] A label group with event but no report configured
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        // [GIVEN] A report set with trigger but no report configured
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Test Label Group', "BJF Direct Print Provider"::FromInteger(0));
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Label Group", LabelGroupCode, Database::Customer);
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider"::FromInteger(0));
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Report Set", ReportSetCode, Database::Customer);
 
         // Create AutoPrinting without Report ID
         AutoPrinting.Init();
-        AutoPrinting."Label Group No." := LabelGroupCode;
-        AutoPrinting."Event No." := EventCode;
+        AutoPrinting."Report Set No." := ReportSetCode;
+        AutoPrinting."Trigger No." := TriggerCode;
         AutoPrinting.Sequence := '1';
         AutoPrinting."Report ID" := 0; // No report
         AutoPrinting.Insert(true);
@@ -122,45 +122,45 @@ codeunit 77800 "BJF Print Management Tests"
         Customer.FindFirst();
         RecRef.GetTable(Customer);
 
-        // [WHEN] QueuePrintLabels is called
-        PrintMgmt.QueuePrintLabels(RecRef, LabelGroupCode, EventCode);
+        // [WHEN] QueuePrintReports is called
+        PrintMgmt.QueuePrintReports(RecRef, ReportSetCode, TriggerCode);
 
-        // [THEN] Should handle the error gracefully (via OnAfterQueuePrintLabels event)
+        // [THEN] Should handle the error gracefully (via OnAfterQueuePrintReports event)
         this.Assert.AreEqual('', GetLastError(), 'No error should be raised to caller');
 
     end;
 
     [Test]
-    internal procedure QueuePrintLabels_MultipleReports_CreatesMultipleBufferEntries()
+    internal procedure QueuePrintReports_MultipleReports_CreatesMultipleBufferEntries()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
         PrintBuffer: Record "BJF Print Buffer";
         Customer: Record Customer;
         RecRef: RecordRef;
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
     begin
-        // [GIVEN] A label group with multiple reports configured
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        // [GIVEN] A report set with multiple reports configured
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Test Label Group', "BJF Direct Print Provider"::FromInteger(0));
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Label Group", LabelGroupCode, Database::Customer);
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Event", EventCode, Database::Customer);
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider"::FromInteger(0));
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Report Set", ReportSetCode, Database::Customer);
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Trigger", TriggerCode, Database::Customer);
 
         // Create multiple AutoPrinting records
-        this.TestUtil.CreateTestAutomaticPrinting(LabelGroupCode, EventCode, '1', Report::"Standard Sales - Invoice");
-        this.TestUtil.CreateTestAutomaticPrinting(LabelGroupCode, EventCode, '2', Report::"Standard Sales - Quote");
-        this.TestUtil.CreateTestAutomaticPrinting(LabelGroupCode, EventCode, '3', Report::"Customer - List");
+        this.TestUtil.CreateTestAutomaticPrinting(ReportSetCode, TriggerCode, '1', Report::"Standard Sales - Invoice");
+        this.TestUtil.CreateTestAutomaticPrinting(ReportSetCode, TriggerCode, '2', Report::"Standard Sales - Quote");
+        this.TestUtil.CreateTestAutomaticPrinting(ReportSetCode, TriggerCode, '3', Report::"Customer - List");
 
         Customer.FindFirst();
         RecRef.GetTable(Customer);
 
-        // [WHEN] QueuePrintLabels is called
-        PrintMgmt.QueuePrintLabels(RecRef, LabelGroupCode, EventCode);
+        // [WHEN] QueuePrintReports is called
+        PrintMgmt.QueuePrintReports(RecRef, ReportSetCode, TriggerCode);
 
         // [THEN] Multiple print buffer entries should be created
         PrintBuffer.Reset();
@@ -169,76 +169,76 @@ codeunit 77800 "BJF Print Management Tests"
     end;
 
     [Test]
-    internal procedure IsEventEnabledForLabelGroup_EnabledEvent_ReturnsTrue()
+    internal procedure IsTriggerEnabledForReportSet_EnabledTrigger_ReturnsTrue()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
         IsEnabled: Boolean;
     begin
-        // [GIVEN] A label group with an enabled event
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        // [GIVEN] A report set with an enabled trigger
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Test Label Group', "BJF Direct Print Provider"::FromInteger(0));
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
-        this.TestUtil.CreateTestAutomaticPrinting(LabelGroupCode, EventCode, '1', Report::"Standard Sales - Invoice");
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider"::FromInteger(0));
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
+        this.TestUtil.CreateTestAutomaticPrinting(ReportSetCode, TriggerCode, '1', Report::"Standard Sales - Invoice");
 
-        // [WHEN] IsEventEnabledForLabelGroup is called
-        IsEnabled := PrintMgmt.IsEventEnabledForLabelGroup(LabelGroupCode, EventCode);
+        // [WHEN] IsTriggerEnabledForReportSet is called
+        IsEnabled := PrintMgmt.IsTriggerEnabledForReportSet(ReportSetCode, TriggerCode);
 
         // [THEN] Should return true
-        this.Assert.IsTrue(IsEnabled, 'Event should be enabled for label group');
+        this.Assert.IsTrue(IsEnabled, 'Trigger should be enabled for report set');
 
     end;
 
     [Test]
-    internal procedure IsEventEnabledForLabelGroup_DisabledEvent_ReturnsFalse()
+    internal procedure IsTriggerEnabledForReportSet_DisabledTrigger_ReturnsFalse()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
         IsEnabled: Boolean;
     begin
-        // [GIVEN] A label group without the event configured
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        // [GIVEN] A report set without the trigger configured
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Test Label Group', "BJF Direct Print Provider"::FromInteger(0));
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider"::FromInteger(0));
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
         // No AutoPrinting record
 
-        // [WHEN] IsEventEnabledForLabelGroup is called
-        IsEnabled := PrintMgmt.IsEventEnabledForLabelGroup(LabelGroupCode, EventCode);
+        // [WHEN] IsTriggerEnabledForReportSet is called
+        IsEnabled := PrintMgmt.IsTriggerEnabledForReportSet(ReportSetCode, TriggerCode);
 
         // [THEN] Should return false
-        this.Assert.IsFalse(IsEnabled, 'Event should not be enabled for label group');
+        this.Assert.IsFalse(IsEnabled, 'Trigger should not be enabled for report set');
 
     end;
 
     [Test]
-    internal procedure IsEventEnabledForLabelGroup_InvalidLabelGroup_ThrowsError()
+    internal procedure IsTriggerEnabledForReportSet_InvalidReportSet_ThrowsError()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        EventRec: Record "BJF Event";
-        EventCode: Code[50];
+        PrintingTrigger: Record "BJF Printing Trigger";
+        TriggerCode: Code[50];
         ErrorOccurred: Boolean;
     begin
-        // [GIVEN] An event but no label group
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
+        // [GIVEN] A trigger but no report set
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
 
-        // [WHEN] IsEventEnabledForLabelGroup is called with invalid label group
+        // [WHEN] IsTriggerEnabledForReportSet is called with invalid report set
         ErrorOccurred := false;
-        asserterror PrintMgmt.IsEventEnabledForLabelGroup('INVALID', EventCode);
+        asserterror PrintMgmt.IsTriggerEnabledForReportSet('INVALID', TriggerCode);
         ErrorOccurred := true;
 
         // [THEN] Should throw an error
-        this.Assert.IsTrue(ErrorOccurred, 'Should throw error for invalid label group');
+        this.Assert.IsTrue(ErrorOccurred, 'Should throw error for invalid report set');
 
     end;
 
@@ -246,33 +246,33 @@ codeunit 77800 "BJF Print Management Tests"
     internal procedure PopulateBufferWithContext_ValidData_CreatesCorrectBuffer()
     var
         PrintMgmt: Codeunit "BJF Print Management";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
         AutoPrinting: Record "BJF Automatic Printing";
         PrintBuffer: Record "BJF Print Buffer";
         Customer: Record Customer;
         RecRef: RecordRef;
-        LabelGroupCode: Code[50];
-        EventCode: Code[50];
+        ReportSetCode: Code[50];
+        TriggerCode: Code[50];
     begin
         // [GIVEN] Configured automatic printing with custom layout
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        LabelGroup := this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Test Label Group', "BJF Direct Print Provider"::FromInteger(0));
-        EventRec := this.TestUtil.CreateTestEvent(EventCode, 'Test Event', "BJF Direct Print Provider"::FromInteger(0));
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Label Group", LabelGroupCode, Database::Customer);
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Event", EventCode, Database::Customer);
+        ReportSet := this.TestUtil.CreateTestReportSet(ReportSetCode, 'Test Report Set', "BJF Direct Print Provider"::FromInteger(0));
+        PrintingTrigger := this.TestUtil.CreateTestTrigger(TriggerCode, 'Test Trigger', "BJF Direct Print Provider"::FromInteger(0));
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Report Set", ReportSetCode, Database::Customer);
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Trigger", TriggerCode, Database::Customer);
 
-        AutoPrinting := this.TestUtil.CreateTestAutomaticPrinting(LabelGroupCode, EventCode, '1', Report::"Standard Sales - Invoice");
+        AutoPrinting := this.TestUtil.CreateTestAutomaticPrinting(ReportSetCode, TriggerCode, '1', Report::"Standard Sales - Invoice");
         AutoPrinting."Qty to Print" := 5;
         AutoPrinting.Modify(true);
 
         Customer.FindFirst();
         RecRef.GetTable(Customer);
 
-        // [WHEN] QueuePrintLabels is called
-        PrintMgmt.QueuePrintLabels(RecRef, LabelGroupCode, EventCode);
+        // [WHEN] QueuePrintReports is called
+        PrintMgmt.QueuePrintReports(RecRef, ReportSetCode, TriggerCode);
 
         // [THEN] Buffer entry should have correct values
         PrintBuffer.SetRange("Report ID", Report::"Standard Sales - Invoice");

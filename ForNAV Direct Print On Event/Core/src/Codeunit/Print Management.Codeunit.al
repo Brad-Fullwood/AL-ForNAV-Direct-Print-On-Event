@@ -3,116 +3,116 @@ namespace BradFullwood.ForNAV.Core;
 using System.Device;
 
 /// <summary>
-/// Codeunit for handling print-related utilities in the label printing system.
+/// Codeunit for handling print-related utilities in the automatic printing system.
 /// </summary>
 /// <remarks>
-/// Provides functionality for populating label print buffers and managing print operations.
+/// Provides functionality for populating print buffers and managing print operations.
 /// </remarks>
 codeunit 77702 "BJF Print Management"
 {
     Access = Public;
     Permissions = tabledata "Printer Selection" = r,
                   tabledata "BJF Automatic Printing" = r,
-                  tabledata "BJF Label Groups" = r,
-                  tabledata "BJF Event" = r;
+                  tabledata "BJF Report Set" = r,
+                  tabledata "BJF Printing Trigger" = r;
 
     /// <summary>
-    /// Queue print labels for a given record reference, label group, and event.
+    /// Queue reports for printing for a given record reference, report set, and trigger.
     /// </summary>
-    /// <param name="RecRef">The record reference to queue print labels for.</param>
-    /// <param name="LabelGroupNo">The label group to queue print labels for.</param>
-    /// <param name="EventNo">The event to queue print labels for.</param>
-    procedure QueuePrintLabels(RecRef: RecordRef; LabelGroupNo: Code[50]; EventNo: Code[50])
+    /// <param name="RecRef">The record reference to queue reports for.</param>
+    /// <param name="ReportSetNo">The report set (what to print).</param>
+    /// <param name="TriggerNo">The printing trigger (when to print).</param>
+    procedure QueuePrintReports(RecRef: RecordRef; ReportSetNo: Code[50]; TriggerNo: Code[50])
     var
         Success: Boolean;
         ErrorMessage: Text;
     begin
-        this.OnBeforeQueuePrintLabels(RecRef, LabelGroupNo, EventNo);
+        this.OnBeforeQueuePrintReports(RecRef, ReportSetNo, TriggerNo);
 
         Success := true;
         ErrorMessage := '';
 
-        if not this.TryQueuePrintLabels(RecRef, LabelGroupNo, EventNo, ErrorMessage) then begin
+        if not this.TryQueuePrintReports(RecRef, ReportSetNo, TriggerNo, ErrorMessage) then begin
             Success := false;
             if ErrorMessage = '' then
                 ErrorMessage := GetLastErrorText();
         end;
 
-        this.OnAfterQueuePrintLabels(RecRef, LabelGroupNo, EventNo, Success, ErrorMessage);
+        this.OnAfterQueuePrintReports(RecRef, ReportSetNo, TriggerNo, Success, ErrorMessage);
     end;
 
-    local procedure TryQueuePrintLabels(RecRef: RecordRef; LabelGroupNo: Code[50]; EventNo: Code[50]; var ErrorMessage: Text): Boolean
+    local procedure TryQueuePrintReports(RecRef: RecordRef; ReportSetNo: Code[50]; TriggerNo: Code[50]; var ErrorMessage: Text): Boolean
     var
         AutoPrinting: Record "BJF Automatic Printing";
-        LabelPrintBuffer: Record "BJF Print Buffer";
-        NoReportsConfiguredErr: Label 'No reports configured for label group %1', Comment = '%1 = Label Group';
-        EventNotEnabledErr: Label 'Event %1 is not enabled for label group %2', Comment = '%1 = Event, %2 = Label Group';
+        PrintBuffer: Record "BJF Print Buffer";
+        NoReportsConfiguredErr: Label 'No reports configured for report set %1', Comment = '%1 = Report Set';
+        TriggerNotEnabledErr: Label 'Trigger %1 is not enabled for report set %2', Comment = '%1 = Trigger, %2 = Report Set';
     begin
-        // Check if the event is enabled for this label group
-        if not this.IsEventEnabledForLabelGroup(LabelGroupNo, EventNo) then begin
-            ErrorMessage := StrSubstNo(EventNotEnabledErr, EventNo, LabelGroupNo);
+        // Check if the trigger is enabled for this report set
+        if not this.IsTriggerEnabledForReportSet(ReportSetNo, TriggerNo) then begin
+            ErrorMessage := StrSubstNo(TriggerNotEnabledErr, TriggerNo, ReportSetNo);
             exit(false);
         end;
 
         // Get report selections
         AutoPrinting.Reset();
-        AutoPrinting.SetRange("Label Group No.", LabelGroupNo);
+        AutoPrinting.SetRange("Report Set No.", ReportSetNo);
         AutoPrinting.SetFilter("Report ID", '<>0');
 
         if AutoPrinting.IsEmpty() then begin
-            ErrorMessage := StrSubstNo(NoReportsConfiguredErr, LabelGroupNo);
+            ErrorMessage := StrSubstNo(NoReportsConfiguredErr, ReportSetNo);
             exit(false);
         end;
 
         // Populate buffer with context information
-        this.PopulateBufferWithContext(AutoPrinting, LabelPrintBuffer, RecRef.RecordId());
+        this.PopulateBufferWithContext(AutoPrinting, PrintBuffer, RecRef.RecordId());
         exit(true);
     end;
 
-    local procedure PopulateBufferWithContext(var AutoPrinting: Record "BJF Automatic Printing"; var LabelPrintBuffer: Record "BJF Print Buffer"; SourceRecordID: RecordId)
+    local procedure PopulateBufferWithContext(var AutoPrinting: Record "BJF Automatic Printing"; var PrintBuffer: Record "BJF Print Buffer"; SourceRecordID: RecordId)
     begin
         if not AutoPrinting.FindSet() then
             exit;
 
         repeat
-            LabelPrintBuffer.Init();
-            LabelPrintBuffer."Source Record" := SourceRecordID;
+            PrintBuffer.Init();
+            PrintBuffer."Source Record" := SourceRecordID;
 
             // Direct field-to-field assignment (type-safe, compile-time checked, performant)
-            LabelPrintBuffer."Report ID" := AutoPrinting."Report ID";
+            PrintBuffer."Report ID" := AutoPrinting."Report ID";
             AutoPrinting.CalcFields("Report Name");
-            LabelPrintBuffer."Report Caption" := AutoPrinting."Report Name";
-            LabelPrintBuffer."Custom Report Layout Code" := AutoPrinting."Custom Report Layout Code";
-            LabelPrintBuffer."Report Layout Name" := AutoPrinting."Report Layout Name";
-            LabelPrintBuffer."Report Layout App ID" := AutoPrinting."Report Layout AppID";
+            PrintBuffer."Report Caption" := AutoPrinting."Report Name";
+            PrintBuffer."Custom Report Layout Code" := AutoPrinting."Custom Report Layout Code";
+            PrintBuffer."Report Layout Name" := AutoPrinting."Report Layout Name";
+            PrintBuffer."Report Layout App ID" := AutoPrinting."Report Layout AppID";
             AutoPrinting.CalcFields("Report Layout Caption");
-            LabelPrintBuffer."Report Layout Caption" := AutoPrinting."Report Layout Caption";
+            PrintBuffer."Report Layout Caption" := AutoPrinting."Report Layout Caption";
             AutoPrinting.CalcFields("Report Layout Publisher");
-            LabelPrintBuffer."Report Layout Publisher" := AutoPrinting."Report Layout Publisher";
-            LabelPrintBuffer."Qty to Print" := AutoPrinting."Qty to Print";
+            PrintBuffer."Report Layout Publisher" := AutoPrinting."Report Layout Publisher";
+            PrintBuffer."Qty to Print" := AutoPrinting."Qty to Print";
 
-            LabelPrintBuffer.Insert(true);
+            PrintBuffer.Insert(true);
         until AutoPrinting.Next() = 0;
     end;
 
-    internal procedure IsEventEnabledForLabelGroup(LabelGroupNo: Code[50]; EventNo: Code[50]): Boolean
+    internal procedure IsTriggerEnabledForReportSet(ReportSetNo: Code[50]; TriggerNo: Code[50]): Boolean
     var
-        LabelGroup: Record "BJF Label Groups";
+        ReportSet: Record "BJF Report Set";
         AutoPrinting: Record "BJF Automatic Printing";
-        LabelGroupNotFoundErr: Label 'Label Group %1 not found', Comment = '%1 = Label Group';
+        ReportSetNotFoundErr: Label 'Report Set %1 not found', Comment = '%1 = Report Set';
     begin
-        // Validate that the label group exists
-        if not LabelGroup.Get(LabelGroupNo) then
-            Error(LabelGroupNotFoundErr, LabelGroupNo);
+        // Validate that the report set exists
+        if not ReportSet.Get(ReportSetNo) then
+            Error(ReportSetNotFoundErr, ReportSetNo);
 
-        // Check if the event is enabled for this label group
-        AutoPrinting.SetRange("Label Group No.", LabelGroupNo);
-        AutoPrinting.SetRange("Event No.", EventNo);
+        // Check if the trigger is enabled for this report set
+        AutoPrinting.SetRange("Report Set No.", ReportSetNo);
+        AutoPrinting.SetRange("Trigger No.", TriggerNo);
         exit(not AutoPrinting.IsEmpty());
     end;
 
     /// <summary>
-    /// Event subscriber to schedule individual task for each Print Buffer insert.
+    /// Trigger subscriber to schedule individual task for each Print Buffer insert.
     /// </summary>
     /// <remarks>
     /// Uses TaskScheduler for invisible background processing with automatic retry.
@@ -145,13 +145,13 @@ codeunit 77702 "BJF Print Management"
 
     // Isolated events to avoid logging holding database locks
     [IntegrationEvent(false, false, true)]
-    local procedure OnBeforeQueuePrintLabels(RecRef: RecordRef; LabelGroupNo: Code[50]; EventNo: Code[50])
+    local procedure OnBeforeQueuePrintReports(RecRef: RecordRef; ReportSetNo: Code[50]; TriggerNo: Code[50])
     begin
     end;
 
     // Isolated events to avoid logging holding database locks
     [IntegrationEvent(false, false, true)]
-    local procedure OnAfterQueuePrintLabels(RecRef: RecordRef; LabelGroupNo: Code[50]; EventNo: Code[50]; Success: Boolean; ErrorMessage: Text)
+    local procedure OnAfterQueuePrintReports(RecRef: RecordRef; ReportSetNo: Code[50]; TriggerNo: Code[50]; Success: Boolean; ErrorMessage: Text)
     begin
     end;
 

@@ -46,29 +46,29 @@ codeunit 77720 "BJF Log Events"
         this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Provider Registration", StrSubstNo(RegistrationMsg, Provider, Description));
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"BJF Print Management", OnBeforeQueuePrintLabels, '', false, false)]
-    local procedure OnBeforeQueuePrintLabels(RecRef: RecordRef; LabelGroupNo: Code[50]; EventNo: Code[50])
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"BJF Print Management", OnBeforeQueuePrintReports, '', false, false)]
+    local procedure OnBeforeQueuePrintReports(RecRef: RecordRef; ReportSetNo: Code[50]; TriggerNo: Code[50])
     var
-        PrintJobStartedMsg: Label 'Print job queued - Label Group: %1, Event: %2, Table: %3', Comment = '%1 = Label Group No, %2 = Event No, %3 = Table Name';
+        PrintJobStartedMsg: Label 'Print job queued - Report Set: %1, Trigger: %2, Table: %3', Comment = '%1 = Report Set No, %2 = Trigger No, %3 = Table Name';
     begin
         this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Print Job Started",
-                 StrSubstNo(PrintJobStartedMsg, LabelGroupNo, EventNo, RecRef.Name()),
+                 StrSubstNo(PrintJobStartedMsg, ReportSetNo, TriggerNo, RecRef.Name()),
                  '', RecRef.RecordId(), '', 0, '');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"BJF Print Management", OnAfterQueuePrintLabels, '', false, false)]
-    local procedure OnAfterQueuePrintLabels(RecRef: RecordRef; LabelGroupNo: Code[50]; EventNo: Code[50]; Success: Boolean; ErrorMessage: Text)
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"BJF Print Management", OnAfterQueuePrintReports, '', false, false)]
+    local procedure OnAfterQueuePrintReports(RecRef: RecordRef; ReportSetNo: Code[50]; TriggerNo: Code[50]; Success: Boolean; ErrorMessage: Text)
     var
-        PrintJobCompletedMsg: Label 'Print job queued successfully - Label Group: %1, Event: %2', Comment = '%1 = Label Group No, %2 = Event No';
-        PrintJobFailedMsg: Label 'Print job queue failed - Label Group: %1, Event: %2', Comment = '%1 = Label Group No, %2 = Event No';
+        PrintJobCompletedMsg: Label 'Print job queued successfully - Report Set: %1, Trigger: %2', Comment = '%1 = Report Set No, %2 = Trigger No';
+        PrintJobFailedMsg: Label 'Print job queue failed - Report Set: %1, Trigger: %2', Comment = '%1 = Report Set No, %2 = Trigger No';
     begin
         if Success then
             this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Print Job Completed",
-                     StrSubstNo(PrintJobCompletedMsg, LabelGroupNo, EventNo),
+                     StrSubstNo(PrintJobCompletedMsg, ReportSetNo, TriggerNo),
                      '', RecRef.RecordId(), '', 0, '')
         else
             this.LoggingManager.LogError(Enum::"BJF Log Event Type"::"Print Job Failed",
-                         StrSubstNo(PrintJobFailedMsg, LabelGroupNo, EventNo),
+                         StrSubstNo(PrintJobFailedMsg, ReportSetNo, TriggerNo),
                          ErrorMessage, RecRef.RecordId());
     end;
 
@@ -104,39 +104,39 @@ codeunit 77720 "BJF Log Events"
     [EventSubscriber(ObjectType::Table, Database::"BJF Automatic Printing", OnAfterInsertEvent, '', false, false)]
     local procedure OnAfterInsertAutomaticPrinting(var Rec: Record "BJF Automatic Printing"; RunTrigger: Boolean)
     var
-        AutomaticPrintingConfigurationAddedMsg: Label 'Automatic printing configuration added - Label Group: %1, Event: %2, Report: %3', Comment = '%1 = Label Group No, %2 = Event No, %3 = Report ID';
+        AutomaticPrintingConfigurationAddedMsg: Label 'Automatic printing configuration added - Report Set: %1, Trigger: %2, Report: %3', Comment = '%1 = Report Set No, %2 = Trigger No, %3 = Report ID';
     begin
         if not RunTrigger then
             exit;
 
         this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Configuration Changed",
-                 StrSubstNo(AutomaticPrintingConfigurationAddedMsg, Rec."Label Group No.", Rec."Event No.", Rec."Report ID"),
+                 StrSubstNo(AutomaticPrintingConfigurationAddedMsg, Rec."Report Set No.", Rec."Trigger No.", Rec."Report ID"),
                  '', Rec.RecordId(), '', 0, '');
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"BJF Automatic Printing", OnAfterModifyEvent, '', false, false)]
     local procedure OnAfterModifyAutomaticPrinting(var Rec: Record "BJF Automatic Printing"; var xRec: Record "BJF Automatic Printing"; RunTrigger: Boolean)
     var
-        AutomaticPrintingConfigurationModifiedMsg: Label 'Automatic printing configuration modified - Label Group: %1, Event: %2, Report: %3', Comment = '%1 = Label Group No, %2 = Event No, %3 = Report ID';
+        AutomaticPrintingConfigurationModifiedMsg: Label 'Automatic printing configuration modified - Report Set: %1, Trigger: %2, Report: %3', Comment = '%1 = Report Set No, %2 = Trigger No, %3 = Report ID';
     begin
         if not RunTrigger then
             exit;
 
         this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Configuration Changed",
-                 StrSubstNo(AutomaticPrintingConfigurationModifiedMsg, Rec."Label Group No.", Rec."Event No.", Rec."Report ID"),
+                 StrSubstNo(AutomaticPrintingConfigurationModifiedMsg, Rec."Report Set No.", Rec."Trigger No.", Rec."Report ID"),
                  '', Rec.RecordId(), '', 0, '');
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"BJF Automatic Printing", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterDeleteAutomaticPrinting(var Rec: Record "BJF Automatic Printing"; RunTrigger: Boolean)
     var
-        AutomaticPrintingConfigurationDeletedMsg: Label 'Automatic printing configuration deleted - Label Group: %1, Event: %2, Report: %3', Comment = '%1 = Label Group No, %2 = Event No, %3 = Report ID';
+        AutomaticPrintingConfigurationDeletedMsg: Label 'Automatic printing configuration deleted - Report Set: %1, Trigger: %2, Report: %3', Comment = '%1 = Report Set No, %2 = Trigger No, %3 = Report ID';
     begin
         if not RunTrigger then
             exit;
 
         this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Configuration Changed",
-                 StrSubstNo(AutomaticPrintingConfigurationDeletedMsg, Rec."Label Group No.", Rec."Event No.", Rec."Report ID"),
+                 StrSubstNo(AutomaticPrintingConfigurationDeletedMsg, Rec."Report Set No.", Rec."Trigger No.", Rec."Report ID"),
                  '', Rec.RecordId(), '', 0, '');
     end;
 

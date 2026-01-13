@@ -4,17 +4,17 @@ using BradFullwood.ForNAV.Core;
 
 /// <summary>
 /// Test codeunit for BJF Interface Utils (77701).
-/// Tests provider registration, label group registration, event registration, and dataset management.
+/// Tests provider registration, report set registration, trigger registration, and source table mapping management.
 /// </summary>
-codeunit 77801 "BJF Interface Utils Tests"
+codeunit 77701 "BJF Interface Utils Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;
     InherentPermissions = x;
     Permissions = tabledata "BJF Provider" = RIMD,
-                 tabledata "BJF Label Groups" = RIMD,
-                 tabledata "BJF Event" = RIMD,
-                 tabledata "BJF Dataset" = RIMD,
+                 tabledata "BJF Report Set" = RIMD,
+                 tabledata "BJF Printing Trigger" = RIMD,
+                 tabledata "BJF Source Table Mapping" = RIMD,
                  tabledata Customer = R,
                  tabledata Vendor = R,
                  tabledata Item = R,
@@ -24,29 +24,29 @@ codeunit 77801 "BJF Interface Utils Tests"
         Assert: Codeunit "Library Assert";
 
     [Test]
-    internal procedure RegisterLabelGroup_SingleTable_CreatesCorrectRecords()
+    internal procedure RegisterReportSet_SingleTable_CreatesCorrectRecords()
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
-        LabelGroup: Record "BJF Label Groups";
-        Dataset: Record "BJF Dataset";
+        ReportSet: Record "BJF Report Set";
+        SourceTableMapping: Record "BJF Source Table Mapping";
         Provider: Record "BJF Provider";
-        LabelGroupCode: Code[50];
+        ReportSetCode: Code[50];
     begin
         // [GIVEN] A provider is set up
         Provider := this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Test Provider', true);
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
 
-        // [WHEN] RegisterLabelGroup is called with single table
-        InterfaceUtils.RegisterLabelGroup(LabelGroupCode, 'Test Label Group', Database::Customer);
+        // [WHEN] RegisterReportSet is called with single table
+        InterfaceUtils.RegisterReportSet(ReportSetCode, 'Test Report Set', Database::Customer);
 
-        // [THEN] Label group and dataset should be created
-        LabelGroup.SetRange("No.", LabelGroupCode);
-        this.Assert.RecordIsNotEmpty(LabelGroup);
+        // [THEN] Report set and source table mapping should be created
+        ReportSet.SetRange("No.", ReportSetCode);
+        this.Assert.RecordIsNotEmpty(ReportSet);
 
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Label Group");
-        Dataset.SetRange("Entity Code", LabelGroupCode);
-        Dataset.SetRange("Table No.", Database::Customer);
-        this.Assert.RecordIsNotEmpty(Dataset);
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Report Set");
+        SourceTableMapping.SetRange("Source Code", ReportSetCode);
+        SourceTableMapping.SetRange("Table No.", Database::Customer);
+        this.Assert.RecordIsNotEmpty(SourceTableMapping);
 
     end;
 
@@ -55,72 +55,72 @@ codeunit 77801 "BJF Interface Utils Tests"
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
         Provider: Record "BJF Provider";
-        EventRec: Record "BJF Event";
-        Dataset: Record "BJF Dataset";
-        EventCode: Code[50];
+        PrintingTrigger: Record "BJF Printing Trigger";
+        SourceTableMapping: Record "BJF Source Table Mapping";
+        TriggerCode: Code[50];
     begin
         // [GIVEN] A provider is set up
         Provider := this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Test Provider', true);
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        // [WHEN] Multiple tables are added and event is registered
+        // [WHEN] Multiple tables are added and trigger is registered
         InterfaceUtils.AddTable(Database::Customer);
         InterfaceUtils.AddTable(Database::Vendor);
         InterfaceUtils.AddTable(Database::Item);
-        InterfaceUtils.RegisterEventWithTables(EventCode, 'Test Event');
+        InterfaceUtils.RegisterTriggerWithTables(TriggerCode, 'Test Trigger');
 
-        // [THEN] Event and all datasets should be created
-        EventRec.SetRange("No.", EventCode);
-        this.Assert.RecordIsNotEmpty(EventRec);
+        // [THEN] Trigger and all source table mappings should be created
+        PrintingTrigger.SetRange("No.", TriggerCode);
+        this.Assert.RecordIsNotEmpty(PrintingTrigger);
 
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Event");
-        Dataset.SetRange("Entity Code", EventCode);
-        this.Assert.AreEqual(3, Dataset.Count(), 'Expected 3 dataset entries');
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Trigger");
+        SourceTableMapping.SetRange("Source Code", TriggerCode);
+        this.Assert.AreEqual(3, SourceTableMapping.Count(), 'Expected 3 source table mapping entries');
 
-        Dataset.SetRange("Table No.", Database::Customer);
-        this.Assert.RecordIsNotEmpty(Dataset);
-        Dataset.SetRange("Table No.", Database::Vendor);
-        this.Assert.RecordIsNotEmpty(Dataset);
-        Dataset.SetRange("Table No.", Database::Item);
-        this.Assert.RecordIsNotEmpty(Dataset);
+        SourceTableMapping.SetRange("Table No.", Database::Customer);
+        this.Assert.RecordIsNotEmpty(SourceTableMapping);
+        SourceTableMapping.SetRange("Table No.", Database::Vendor);
+        this.Assert.RecordIsNotEmpty(SourceTableMapping);
+        SourceTableMapping.SetRange("Table No.", Database::Item);
+        this.Assert.RecordIsNotEmpty(SourceTableMapping);
 
     end;
 
     [Test]
-    internal procedure RegisterEventWithTables_ValidData_CreatesEventAndDatasets()
+    internal procedure RegisterTriggerWithTables_ValidData_CreatesTriggerAndMappings()
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
         Provider: Record "BJF Provider";
-        EventRec: Record "BJF Event";
-        Dataset: Record "BJF Dataset";
-        EventCode: Code[50];
+        PrintingTrigger: Record "BJF Printing Trigger";
+        SourceTableMapping: Record "BJF Source Table Mapping";
+        TriggerCode: Code[50];
     begin
         // [GIVEN] A provider with tables added to buffer
         Provider := this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Test Provider', true);
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
         InterfaceUtils.AddTable(Database::Customer);
         InterfaceUtils.AddTable(Database::"Sales Header");
 
-        // [WHEN] RegisterEventWithTables is called
-        InterfaceUtils.RegisterEventWithTables(EventCode, 'Sales Event');
+        // [WHEN] RegisterTriggerWithTables is called
+        InterfaceUtils.RegisterTriggerWithTables(TriggerCode, 'Sales Trigger');
 
-        // [THEN] Event should be created with correct datasets
-        EventRec.SetRange("No.", EventCode);
-        EventRec.FindFirst();
-        this.Assert.AreEqual('Sales Event', EventRec.Description, 'Event description mismatch');
+        // [THEN] Trigger should be created with correct mappings
+        PrintingTrigger.SetRange("No.", TriggerCode);
+        PrintingTrigger.FindFirst();
+        this.Assert.AreEqual('Sales Trigger', PrintingTrigger.Description, 'Trigger description mismatch');
 
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Event");
-        Dataset.SetRange("Entity Code", EventCode);
-        this.Assert.AreEqual(2, Dataset.Count(), 'Expected 2 dataset entries');
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Trigger");
+        SourceTableMapping.SetRange("Source Code", TriggerCode);
+        this.Assert.AreEqual(2, SourceTableMapping.Count(), 'Expected 2 source table mapping entries');
 
         // [THEN] Buffer should be cleared
         // Next registration should not include previous tables
-        InterfaceUtils.RegisterEventWithTables(this.TestUtil.GenerateRandomCode('EV2'), 'Empty Event');
-        Dataset.Reset();
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Event");
-        Dataset.SetRange("Entity Code", EventCode);
-        this.Assert.AreEqual(2, Dataset.Count(), 'Buffer should be cleared after registration');
+        InterfaceUtils.RegisterTriggerWithTables(this.TestUtil.GenerateRandomCode('TR2'), 'Empty Trigger');
+        SourceTableMapping.Reset();
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Trigger");
+        SourceTableMapping.SetRange("Source Code", TriggerCode);
+        this.Assert.AreEqual(2, SourceTableMapping.Count(), 'Buffer should be cleared after registration');
 
     end;
 
@@ -129,107 +129,107 @@ codeunit 77801 "BJF Interface Utils Tests"
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
         Provider: Record "BJF Provider";
-        LabelGroup: Record "BJF Label Groups";
-        EventRec: Record "BJF Event";
-        Dataset: Record "BJF Dataset";
+        ReportSet: Record "BJF Report Set";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        SourceTableMapping: Record "BJF Source Table Mapping";
     begin
-        // [GIVEN] Multiple providers, label groups, events, and datasets exist
+        // [GIVEN] Multiple providers, report sets, triggers, and mappings exist
         this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Provider 1', true);
-        this.TestUtil.CreateTestLabelGroup('LG1', 'Label Group 1', "BJF Direct Print Provider"::FromInteger(0));
-        this.TestUtil.CreateTestEvent('EV1', 'Event 1', "BJF Direct Print Provider"::FromInteger(0));
-        this.TestUtil.CreateTestDataset("BJF Direct Print Provider"::FromInteger(0), "BJF Dataset Entity Type"::"Label Group", 'LG1', Database::Customer);
+        this.TestUtil.CreateTestReportSet('RS1', 'Report Set 1', "BJF Direct Print Provider"::FromInteger(0));
+        this.TestUtil.CreateTestTrigger('TR1', 'Trigger 1', "BJF Direct Print Provider"::FromInteger(0));
+        this.TestUtil.CreateTestSourceTableMapping("BJF Direct Print Provider"::FromInteger(0), "BJF Mapping Type"::"Report Set", 'RS1', Database::Customer);
 
         // [WHEN] ClearAllProviders is called
         InterfaceUtils.ClearAllProviders();
 
         // [THEN] All records should be deleted
         this.Assert.RecordIsEmpty(Provider);
-        this.Assert.RecordIsEmpty(LabelGroup);
-        this.Assert.RecordIsEmpty(EventRec);
-        this.Assert.RecordIsEmpty(Dataset);
+        this.Assert.RecordIsEmpty(ReportSet);
+        this.Assert.RecordIsEmpty(PrintingTrigger);
+        this.Assert.RecordIsEmpty(SourceTableMapping);
 
     end;
 
     [Test]
-    internal procedure RegisterLabelGroup_DuplicateCode_UpdatesExisting()
+    internal procedure RegisterReportSet_DuplicateCode_UpdatesExisting()
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
-        LabelGroup: Record "BJF Label Groups";
+        ReportSet: Record "BJF Report Set";
         Provider: Record "BJF Provider";
-        LabelGroupCode: Code[50];
+        ReportSetCode: Code[50];
     begin
-        // [GIVEN] A label group already exists
+        // [GIVEN] A report set already exists
         Provider := this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Test Provider', true);
-        LabelGroupCode := 'EXISTING';
-        this.TestUtil.CreateTestLabelGroup(LabelGroupCode, 'Original Description', "BJF Direct Print Provider"::FromInteger(0));
+        ReportSetCode := 'EXISTING';
+        this.TestUtil.CreateTestReportSet(ReportSetCode, 'Original Description', "BJF Direct Print Provider"::FromInteger(0));
 
-        // [WHEN] RegisterLabelGroup is called with same code
-        InterfaceUtils.RegisterLabelGroup(LabelGroupCode, 'Updated Description', Database::Customer);
+        // [WHEN] RegisterReportSet is called with same code
+        InterfaceUtils.RegisterReportSet(ReportSetCode, 'Updated Description', Database::Customer);
 
         // [THEN] Existing record should be updated
-        LabelGroup.Get(LabelGroupCode);
-        this.Assert.AreEqual('Updated Description', LabelGroup.Description, 'Description should be updated');
+        ReportSet.Get(ReportSetCode);
+        this.Assert.AreEqual('Updated Description', ReportSet.Description, 'Description should be updated');
 
-        LabelGroup.SetRange("No.", LabelGroupCode);
-        this.Assert.AreEqual(1, LabelGroup.Count(), 'Should only have 1 record');
+        ReportSet.SetRange("No.", ReportSetCode);
+        this.Assert.AreEqual(1, ReportSet.Count(), 'Should only have 1 record');
 
     end;
 
     [Test]
-    internal procedure RegisterLabelGroup_MultipleTablesOverload_CreatesAllDatasets()
+    internal procedure RegisterReportSet_MultipleTablesOverload_CreatesAllMappings()
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
-        Dataset: Record "BJF Dataset";
+        SourceTableMapping: Record "BJF Source Table Mapping";
         Provider: Record "BJF Provider";
         TableList: List of [Integer];
-        LabelGroupCode: Code[50];
+        ReportSetCode: Code[50];
     begin
         // [GIVEN] A provider with list of tables
         Provider := this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Test Provider', true);
-        LabelGroupCode := this.TestUtil.GenerateRandomCode('LG');
+        ReportSetCode := this.TestUtil.GenerateRandomCode('RS');
 
         TableList.Add(Database::Customer);
         TableList.Add(Database::Vendor);
         TableList.Add(Database::Item);
 
-        // [WHEN] RegisterLabelGroup is called with table list
-        InterfaceUtils.RegisterLabelGroup(LabelGroupCode, 'Multi-Table Label', TableList);
+        // [WHEN] RegisterReportSet is called with table list
+        InterfaceUtils.RegisterReportSet(ReportSetCode, 'Multi-Table Report Set', TableList);
 
-        // [THEN] All datasets should be created
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Label Group");
-        Dataset.SetRange("Entity Code", LabelGroupCode);
-        this.Assert.AreEqual(3, Dataset.Count(), 'Expected 3 dataset entries');
+        // [THEN] All source table mappings should be created
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Report Set");
+        SourceTableMapping.SetRange("Source Code", ReportSetCode);
+        this.Assert.AreEqual(3, SourceTableMapping.Count(), 'Expected 3 source table mapping entries');
 
     end;
 
     [Test]
-    internal procedure RegisterEventWithTables_NoTablesInBuffer_CreatesEventOnly()
+    internal procedure RegisterTriggerWithTables_NoTablesInBuffer_CreatesTriggerOnly()
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
-        EventRec: Record "BJF Event";
-        Dataset: Record "BJF Dataset";
+        PrintingTrigger: Record "BJF Printing Trigger";
+        SourceTableMapping: Record "BJF Source Table Mapping";
         Provider: Record "BJF Provider";
-        EventCode: Code[50];
+        TriggerCode: Code[50];
     begin
         // [GIVEN] A provider with empty table buffer
         Provider := this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Test Provider', true);
-        EventCode := this.TestUtil.GenerateRandomCode('EV');
+        TriggerCode := this.TestUtil.GenerateRandomCode('TR');
 
-        // [WHEN] RegisterEventWithTables is called without adding tables
-        InterfaceUtils.RegisterEventWithTables(EventCode, 'Empty Event');
+        // [WHEN] RegisterTriggerWithTables is called without adding tables
+        InterfaceUtils.RegisterTriggerWithTables(TriggerCode, 'Empty Trigger');
 
-        // [THEN] Event should be created without datasets
-        EventRec.SetRange("No.", EventCode);
-        this.Assert.RecordIsNotEmpty(EventRec);
+        // [THEN] Trigger should be created without mappings
+        PrintingTrigger.SetRange("No.", TriggerCode);
+        this.Assert.RecordIsNotEmpty(PrintingTrigger);
 
-        Dataset.SetRange("Entity Type", "BJF Dataset Entity Type"::"Event");
-        Dataset.SetRange("Entity Code", EventCode);
-        this.Assert.RecordIsEmpty(Dataset);
+        SourceTableMapping.SetRange("Mapping Type", "BJF Mapping Type"::"Trigger");
+        SourceTableMapping.SetRange("Source Code", TriggerCode);
+        this.Assert.RecordIsEmpty(SourceTableMapping);
 
     end;
 
     [Test]
-    internal procedure RegisterLabelGroup_EmptyCode_ThrowsError()
+    internal procedure RegisterReportSet_EmptyCode_ThrowsError()
     var
         InterfaceUtils: Codeunit "BJF Interface Utils";
         Provider: Record "BJF Provider";
@@ -238,9 +238,9 @@ codeunit 77801 "BJF Interface Utils Tests"
         // [GIVEN] A provider exists
         Provider := this.TestUtil.CreateTestProvider("BJF Direct Print Provider"::FromInteger(0), 'Test Provider', true);
 
-        // [WHEN] RegisterLabelGroup is called with empty code
+        // [WHEN] RegisterReportSet is called with empty code
         ErrorOccurred := false;
-        asserterror InterfaceUtils.RegisterLabelGroup('', 'Test', Database::Customer);
+        asserterror InterfaceUtils.RegisterReportSet('', 'Test', Database::Customer);
         ErrorOccurred := true;
 
         // [THEN] Should throw an error

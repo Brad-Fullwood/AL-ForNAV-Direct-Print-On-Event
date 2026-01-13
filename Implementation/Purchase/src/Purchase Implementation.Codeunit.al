@@ -22,9 +22,9 @@ codeunit 77740 "BJF Purchase Implementation" implements "I-BJF Direct Print Inte
 
     procedure RegisterLabelGroups(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::Purchase), 'Purchase Labels', Database::"Purchase Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase"), 'Posted Purchase Labels', Database::"Purch. Inv. Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase Receipt"), 'Posted Purchase Receipt Labels', Database::"Purch. Rcpt. Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::Purchase), 'Purchase', Database::"Purchase Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase"), 'Purchase Posted', Database::"Purch. Inv. Header");
+        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase Receipt"), 'Purchase Receipt Posted', Database::"Purch. Rcpt. Header");
     end;
 
     procedure RegisterEvents(var Helper: Codeunit "BJF Interface Utils")

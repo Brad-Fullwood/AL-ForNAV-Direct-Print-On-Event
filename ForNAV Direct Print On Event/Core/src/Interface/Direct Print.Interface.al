@@ -4,7 +4,7 @@ namespace BradFullwood.ForNAV.Core;
 /// Interface for provider registration with focused, single-responsibility procedures.
 /// </summary>
 /// <remarks>
-/// Each provider implements this interface to declare their identity, label groups, and events.
+/// Each provider implements this interface to declare their identity, report sets, and triggers.
 /// Providers simply return their configuration data rather than calling registration procedures.
 /// </remarks>
 interface "I-BJF Direct Print Interface"
@@ -18,14 +18,20 @@ interface "I-BJF Direct Print Interface"
     procedure GetProviderInfo(var Provider: Enum "BJF Direct Print Provider"; var Description: Text[100]; var DefaultActive: Boolean)
 
     /// <summary>
-    /// Registers all label groups for this provider using the provided helper.
+    /// Registers all report sets for this provider using the provided helper.
     /// </summary>
     /// <param name="Helper">The helper codeunit to use for registration.</param>
-    procedure RegisterLabelGroups(var Helper: Codeunit "BJF Interface Utils")
+    /// <remarks>
+    /// Report sets define WHAT to print - the collection of reports/documents to output.
+    /// </remarks>
+    procedure RegisterReportSets(var Helper: Codeunit "BJF Interface Utils")
 
     /// <summary>
-    /// Registers all events for this provider using the provided helper.
+    /// Registers all printing triggers for this provider using the provided helper.
     /// </summary>
     /// <param name="Helper">The helper codeunit to use for registration.</param>
-    procedure RegisterEvents(var Helper: Codeunit "BJF Interface Utils")
+    /// <remarks>
+    /// Printing triggers define WHEN to print - the business events that trigger printing.
+    /// </remarks>
+    procedure RegisterTriggers(var Helper: Codeunit "BJF Interface Utils")
 }

@@ -1,18 +1,18 @@
 namespace BradFullwood.ForNAV.Core;
 
 /// <summary>
-/// Utilities for registering label groups and events with the interface.
+/// Utilities for registering report sets and printing triggers with the interface.
 /// </summary>
 /// <remarks>
-/// This codeunit is used to register label groups and events with the interface.
-/// It is used to ensure that the label groups and events are registered with the interface.
+/// This codeunit handles the registration of providers, report sets, printing triggers,
+/// and their associated source table mappings.
 /// </remarks>
 codeunit 77701 "BJF Interface Utils"
 {
     Permissions = tabledata "BJF Provider" = rimd,
-                  tabledata "BJF Label Groups" = rimd,
-                  tabledata "BJF Event" = rimd,
-                  tabledata "BJF Dataset" = rimd;
+                  tabledata "BJF Report Set" = rimd,
+                  tabledata "BJF Printing Trigger" = rimd,
+                  tabledata "BJF Source Table Mapping" = rimd;
 
     var
         CurrentProvider: Enum "BJF Direct Print Provider";
@@ -20,21 +20,21 @@ codeunit 77701 "BJF Interface Utils"
 
 
     /// <summary>
-    /// Register a label group with a single table.
+    /// Register a report set with a single table.
     /// </summary>
-    /// <param name="LabelGroupCode">The code of the label group.</param>
-    /// <param name="LabelGroupName">The name of the label group.</param>
-    /// <param name="TableID">The table ID of the label group.</param>
-    procedure RegisterLabelGroup(LabelGroupCode: Code[50]; LabelGroupName: Text[100]; TableID: Integer)
+    /// <param name="ReportSetCode">The code of the report set.</param>
+    /// <param name="ReportSetName">The name of the report set.</param>
+    /// <param name="TableID">The table ID for the report set.</param>
+    procedure RegisterReportSet(ReportSetCode: Code[50]; ReportSetName: Text[100]; TableID: Integer)
     var
         TableList: List of [Integer];
     begin
         TableList.Add(TableID);
-        this.RegisterLabelGroup(LabelGroupCode, LabelGroupName, TableList);
+        this.RegisterReportSet(ReportSetCode, ReportSetName, TableList);
     end;
 
     /// <summary>
-    /// Add a table to the buffer for the next event registration.
+    /// Add a table to the buffer for the next trigger registration.
     /// </summary>
     /// <param name="TableID">The table ID to add to the buffer.</param>
     procedure AddTable(TableID: Integer)
@@ -44,32 +44,32 @@ codeunit 77701 "BJF Interface Utils"
 
 
     /// <summary>
-    /// Register an event with all tables currently in the buffer, then clear the buffer.
+    /// Register a printing trigger with all tables currently in the buffer, then clear the buffer.
     /// </summary>
-    /// <param name="EventCode">The code of the event.</param>
-    /// <param name="EventName">The name of the event.</param>
-    procedure RegisterEventWithTables(EventCode: Code[50]; EventName: Text[50])
+    /// <param name="TriggerCode">The code of the printing trigger.</param>
+    /// <param name="TriggerName">The name of the printing trigger.</param>
+    procedure RegisterTriggerWithTables(TriggerCode: Code[50]; TriggerName: Text[50])
     var
         TableID: Integer;
     begin
-        this.InsertEvent(this.CurrentProvider, EventCode, EventName);
+        this.InsertTrigger(this.CurrentProvider, TriggerCode, TriggerName);
 
-        // Write to unified Dataset table
+        // Write to Source Table Mapping table
         foreach TableID in this.TableBuffer do
-            this.InsertDataset(this.CurrentProvider, Enum::"BJF Dataset Entity Type"::"Event", EventCode, TableID);
+            this.InsertSourceTableMapping(this.CurrentProvider, Enum::"BJF Mapping Type"::"Trigger", TriggerCode, TableID);
 
         Clear(this.TableBuffer);
     end;
 
-    internal procedure RegisterLabelGroup(LabelGroupCode: Code[50]; LabelGroupName: Text[100]; TableIDs: List of [Integer])
+    internal procedure RegisterReportSet(ReportSetCode: Code[50]; ReportSetName: Text[100]; TableIDs: List of [Integer])
     var
         TableID: Integer;
     begin
-        this.InsertLabelGroup(this.CurrentProvider, LabelGroupCode, LabelGroupName);
+        this.InsertReportSet(this.CurrentProvider, ReportSetCode, ReportSetName);
 
-        // Write to unified Dataset table
+        // Write to Source Table Mapping table
         foreach TableID in TableIDs do
-            this.InsertDataset(this.CurrentProvider, Enum::"BJF Dataset Entity Type"::"Label Group", LabelGroupCode, TableID);
+            this.InsertSourceTableMapping(this.CurrentProvider, Enum::"BJF Mapping Type"::"Report Set", ReportSetCode, TableID);
     end;
 
     internal procedure RegisterAllProviders()
@@ -89,10 +89,10 @@ codeunit 77701 "BJF Interface Utils"
             Interface.GetProviderInfo(Provider, Description, DefaultActive);
             this.StartProviderRegistration(Provider, Description, DefaultActive);
 
-            // Register label groups and events
+            // Register report sets and triggers
             Helper := this;
-            Interface.RegisterLabelGroups(Helper);
-            Interface.RegisterEvents(Helper);
+            Interface.RegisterReportSets(Helper);
+            Interface.RegisterTriggers(Helper);
         end;
 
         this.OnAfterRegisterAllProviders();
@@ -119,73 +119,99 @@ codeunit 77701 "BJF Interface Utils"
     end;
 
 
-    local procedure InsertLabelGroup(Provider: Enum "BJF Direct Print Provider"; LabelGroupID: Code[50]; LabelGroupName: Text[100])
+    local procedure InsertReportSet(Provider: Enum "BJF Direct Print Provider"; ReportSetID: Code[50]; ReportSetName: Text[100])
     var
-        LabelGroup: Record "BJF Label Groups";
+        ReportSet: Record "BJF Report Set";
     begin
-        LabelGroup.Init();
-        LabelGroup."Provider No." := Provider;
-        LabelGroup."No." := LabelGroupID;
-        LabelGroup.Description := LabelGroupName;
+        ReportSet.Init();
+        ReportSet."Provider No." := Provider;
+        ReportSet."No." := ReportSetID;
+        ReportSet.Description := ReportSetName;
 
-        LabelGroup.SetRecFilter();
-        if LabelGroup.IsEmpty() then
-            LabelGroup.Insert(true)
+        ReportSet.SetRecFilter();
+        if ReportSet.IsEmpty() then
+            ReportSet.Insert(true)
         else
-            LabelGroup.Modify(true);
+            ReportSet.Modify(true);
     end;
 
-    local procedure InsertEvent(Provider: Enum "BJF Direct Print Provider"; EventCode: Code[50]; EventDescription: Text[50])
+    local procedure InsertTrigger(Provider: Enum "BJF Direct Print Provider"; TriggerCode: Code[50]; TriggerDescription: Text[50])
     var
-        EventRec: Record "BJF Event";
+        PrintingTrigger: Record "BJF Printing Trigger";
     begin
-        EventRec.Init();
-        EventRec."Provider No." := Provider;
-        EventRec."No." := EventCode;
-        EventRec."Description" := EventDescription;
+        PrintingTrigger.Init();
+        PrintingTrigger."Provider No." := Provider;
+        PrintingTrigger."No." := TriggerCode;
+        PrintingTrigger."Description" := TriggerDescription;
 
-        EventRec.SetRecFilter();
-        if EventRec.IsEmpty() then
-            EventRec.Insert(true)
+        PrintingTrigger.SetRecFilter();
+        if PrintingTrigger.IsEmpty() then
+            PrintingTrigger.Insert(true)
         else
-            EventRec.Modify(true);
+            PrintingTrigger.Modify(true);
     end;
 
-    local procedure InsertDataset(Provider: Enum "BJF Direct Print Provider"; EntityType: Enum "BJF Dataset Entity Type"; EntityCode: Code[50]; TableID: Integer)
+    local procedure InsertSourceTableMapping(Provider: Enum "BJF Direct Print Provider"; MappingType: Enum "BJF Mapping Type"; SourceCode: Code[50]; TableID: Integer)
     var
-        Dataset: Record "BJF Dataset";
+        SourceTableMapping: Record "BJF Source Table Mapping";
     begin
-        Dataset.Init();
-        Dataset."Provider No." := Provider;
-        Dataset."Entity Type" := EntityType;
-        Dataset."Entity Code" := EntityCode;
-        Dataset."Table No." := TableID;
+        SourceTableMapping.Init();
+        SourceTableMapping."Provider No." := Provider;
+        SourceTableMapping."Mapping Type" := MappingType;
+        SourceTableMapping."Source Code" := SourceCode;
+        SourceTableMapping."Table No." := TableID;
+        SourceTableMapping."Source Description" := this.GetSourceDescription(Provider, MappingType, SourceCode);
+        SourceTableMapping.Indentation := 1; // Mapping rows are indented under their provider/type
 
-        Dataset.SetRecFilter();
-        if Dataset.IsEmpty() then
-            Dataset.Insert(true)
+        SourceTableMapping.SetRecFilter();
+        if SourceTableMapping.IsEmpty() then
+            SourceTableMapping.Insert(true)
         else
-            Dataset.Modify(true);
+            SourceTableMapping.Modify(true);
+    end;
+
+    local procedure GetSourceDescription(Provider: Enum "BJF Direct Print Provider"; MappingType: Enum "BJF Mapping Type"; SourceCode: Code[50]): Text[250]
+    var
+        PrintingTrigger: Record "BJF Printing Trigger";
+        ReportSet: Record "BJF Report Set";
+    begin
+        case MappingType of
+            Enum::"BJF Mapping Type"::"Trigger":
+                begin
+                    PrintingTrigger.SetRange("Provider No.", Provider);
+                    PrintingTrigger.SetRange("No.", SourceCode);
+                    if PrintingTrigger.FindFirst() then
+                        exit(PrintingTrigger.Description);
+                end;
+            Enum::"BJF Mapping Type"::"Report Set":
+                begin
+                    ReportSet.SetRange("Provider No.", Provider);
+                    ReportSet.SetRange("No.", SourceCode);
+                    if ReportSet.FindFirst() then
+                        exit(ReportSet.Description);
+                end;
+        end;
+        exit('');
     end;
 
     internal procedure ClearAllProviders()
     var
         Providers: Record "BJF Provider";
-        Events: Record "BJF Event";
-        Labels: Record "BJF Label Groups";
-        Datasets: Record "BJF Dataset";
+        Triggers: Record "BJF Printing Trigger";
+        ReportSets: Record "BJF Report Set";
+        Mappings: Record "BJF Source Table Mapping";
     begin
         if not Providers.IsEmpty() then
             Providers.DeleteAll(false);
 
-        if not Events.IsEmpty() then
-            Events.DeleteAll(false);
+        if not Triggers.IsEmpty() then
+            Triggers.DeleteAll(false);
 
-        if not Labels.IsEmpty() then
-            Labels.DeleteAll(false);
+        if not ReportSets.IsEmpty() then
+            ReportSets.DeleteAll(false);
 
-        if not Datasets.IsEmpty() then
-            Datasets.DeleteAll(false);
+        if not Mappings.IsEmpty() then
+            Mappings.DeleteAll(false);
     end;
 
     /// <summary>
