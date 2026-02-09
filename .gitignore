@@ -20,3 +20,4 @@ rad.json
 .vscode/
 cache_*
 ~$*
+.serena/
