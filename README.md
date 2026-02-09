@@ -1,5 +1,7 @@
 # ForNAV Direct Print On Event
 
+> **⚠️ UNTESTED — This project is currently untested and under active development. It has not been validated in a production or sandbox environment. Use at your own risk.**
+
 An AL extension for Microsoft Business Central that provides **automatic direct printing of ForNAV labels triggered by business events**. This solution eliminates manual intervention by automatically printing labels when specific business events occur, such as sales order creation, inventory movements, or warehouse operations.
 
 ## 🧩 **Modular Architecture - Install Only What You Need**
