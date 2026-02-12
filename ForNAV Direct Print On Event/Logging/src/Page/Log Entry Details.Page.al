@@ -6,7 +6,7 @@ namespace BradFullwood.ForNAV.Logging;
 page 77722 "BJF Log Entry Details"
 {
     ApplicationArea = All;
-    Caption = 'Log Entry Details';
+    Caption = 'Entry Details';
     PageType = CardPart;
     SourceTable = "BJF Log Entry";
     Editable = false;

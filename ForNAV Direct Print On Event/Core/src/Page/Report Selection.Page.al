@@ -16,7 +16,7 @@ page 77704 "BJF Report Selection"
     PageType = Worksheet;
     SaveValues = true;
     SourceTable = "BJF Automatic Printing";
-    UsageCategory = Administration;
+    UsageCategory = None;
     Extensible = false;
     SourceTableView = sorting("Report Set No.", "Trigger No.", Sequence) order(ascending);
     Permissions = tabledata "BJF Printing Trigger" = r,

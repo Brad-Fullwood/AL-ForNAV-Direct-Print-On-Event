@@ -1,15 +1,15 @@
 {
   "id": "fc2b4d88-ddee-427c-8ca2-c733da841dce",
-  "name": "ForNAV Direct Print On Event - Performance Tests",
+  "name": "ForNAV Direct Print - Performance Tests",
   "publisher": "Brad Fullwood",
   "version": "1.0.0.0",
-  "brief": "Performance tests for ForNAV Direct Print On Event Core.",
-  "description": "This extension provides performance tests simulating business processes for the ForNAV Direct Print On Event Core, to detect regressions during development.",
-  "platform": "26.0.0.0",
-  "application": "26.0.0.0",
-  "runtime": "15.0",
+  "brief": "Performance tests for ForNAV Direct Print Core.",
+  "description": "Provides performance tests simulating business processes for ForNAV Direct Print Core, to detect regressions during development.",
+  "platform": "1.0.0.0",
+  "application": "27.0.0.0",
+  "runtime": "16.0",
   "logo": "./resources/TechnicallyBusinesscentral.png",
-  "url": "",
+  "url": "https://github.com/Brad-Fullwood/AL-ForNAV-Direct-Print-On-Event",
   "EULA": "",
   "privacyStatement": "",
   "help": "",
@@ -18,7 +18,7 @@
   "dependencies": [
     {
       "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
-      "name": "Core",
+      "name": "ForNAV Direct Print - Core",
       "publisher": "Brad Fullwood",
       "version": "1.0.0.0"
     },
@@ -26,13 +26,13 @@
       "id": "75f1590f-55c5-4501-ae63-bada5534e852",
       "publisher": "Microsoft",
       "name": "Performance Toolkit",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     },
     {
       "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
       "publisher": "Microsoft",
       "name": "Tests-TestLibraries",
-      "version": "26.0.0.0"
+      "version": "27.0.0.0"
     }
   ],
   "idRanges": [
@@ -49,12 +49,5 @@
     "allowDebugging": true,
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
-  },
-  "source": {
-    "repositoryUrl": "https://github.com/microsoft/BCApps",
-    "commit": "9950b0dc18096337f9a56b9347d63e85177075c7"
-  },
-  "build": {},
-  "internalsVisibleTo": [],
-  "keyVaultUrls": []
+  }
 }

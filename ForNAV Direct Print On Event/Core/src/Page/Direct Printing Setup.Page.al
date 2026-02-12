@@ -12,11 +12,11 @@ using System.Utilities;
 page 77701 "BJF Direct Printing Setup"
 {
     ApplicationArea = All;
-    Caption = 'Direct Printing Setup';
+    Caption = 'Direct Print Setup';
     PageType = Card;
     UsageCategory = Tasks;
     Editable = false;
-    Extensible = false;
+    Extensible = true;
 
     layout
     {

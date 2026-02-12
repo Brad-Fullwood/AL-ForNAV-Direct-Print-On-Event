@@ -1,27 +1,27 @@
 {
   "id": "5360ceba-f19f-4f3c-b381-7b60e8245e2a",
-  "name": "Purchase",
+  "name": "ForNAV Direct Print - Purchase",
   "publisher": "Brad Fullwood",
   "version": "1.0.0.0",
-  "brief": "",
-  "description": "",
+  "brief": "Purchase event provider for ForNAV Direct Print.",
+  "description": "Provides automatic direct printing of ForNAV reports triggered by purchase business events, such as posting purchase orders, invoices, and receipts.",
   "privacyStatement": "",
   "EULA": "",
   "help": "",
-  "url": "",
+  "url": "https://github.com/Brad-Fullwood/AL-ForNAV-Direct-Print-On-Event",
   "logo": "",
   "dependencies": [
     {
       "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
-      "name": "ForNAV Direct Print On Event - Core",
+      "name": "ForNAV Direct Print - Core",
       "publisher": "Brad Fullwood",
       "version": "1.0.0.0"
     }
   ],
   "screenshots": [],
   "platform": "1.0.0.0",
-  "application": "26.0.0.0",
-  "runtime": "15.2",
+  "application": "27.0.0.0",
+  "runtime": "16.0",
   "idRanges": [
     {
       "from": 77740,

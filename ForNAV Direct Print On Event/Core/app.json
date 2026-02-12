@@ -1,10 +1,10 @@
 {
   "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
-  "name": "ForNAV Direct Print On Event - Core",
+  "name": "ForNAV Direct Print - Core",
   "publisher": "Brad Fullwood",
   "version": "1.0.0.1",
-  "brief": "Core functionality for direct printing of ForNAV labels triggered by business events.",
-  "description": "This extension provides the core components for automatically printing ForNAV labels directly upon business events, such as sales order creation or inventory movements. It includes print buffering, task scheduling, provider management, and integration with ForNAV reporting.",
+  "brief": "Core functionality for ForNAV Direct Print.",
+  "description": "Core components for automatically printing ForNAV reports triggered by business events. Includes print buffering, task scheduling, provider management, and ForNAV integration.",
   "privacyStatement": "",
   "EULA": "",
   "help": "",

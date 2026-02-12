@@ -6,10 +6,10 @@ namespace BradFullwood.ForNAV.Logging;
 page 77723 "BJF Log Setup"
 {
     ApplicationArea = All;
-    Caption = 'Log Setup';
+    Caption = 'Direct Print Log Setup';
     PageType = Card;
     SourceTable = "BJF Log Setup";
-    UsageCategory = Administration;
+    UsageCategory = None;
     InsertAllowed = false;
     DeleteAllowed = false;
 
@@ -52,9 +52,9 @@ page 77723 "BJF Log Setup"
             action(ViewLogEntries)
             {
                 ApplicationArea = All;
-                Caption = 'View Log Entries';
-                Image = List;
-                ToolTip = 'Open the log entries page.';
+                Caption = 'View Log';
+                Image = Log;
+                ToolTip = 'Open the direct print log entries.';
                 RunObject = page "BJF Log Entries";
             }
             group(Maintenance)

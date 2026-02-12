@@ -8,7 +8,7 @@ page 77721 "BJF Log Entry Card"
     ApplicationArea = All;
     UsageCategory = None;
     Extensible = false;
-    Caption = 'Log Entry Details';
+    Caption = 'Direct Print Log Entry';
     PageType = Card;
     SourceTable = "BJF Log Entry";
     Editable = false;
