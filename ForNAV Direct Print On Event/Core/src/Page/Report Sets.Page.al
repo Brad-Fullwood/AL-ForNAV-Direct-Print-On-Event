@@ -22,17 +22,9 @@ page 77703 "BJF Report Sets"
         {
             repeater(General)
             {
-                field("No."; Rec."No.")
-                {
-                    ToolTip = 'Specifies the unique identifier for the report set.';
-                }
                 field(Description; Rec.Description)
                 {
                     ToolTip = 'Specifies what this report set produces.';
-                }
-                field("Provider No."; Rec."Provider No.")
-                {
-                    ToolTip = 'Specifies which provider registered this report set.';
                 }
             }
         }
