@@ -20,6 +20,7 @@ codeunit 77703 "BJF Scheduled Task Runner"
                   tabledata "ForNAV DirPrt Queue" = rimd,
                   tabledata "ForNAV Local Printer" = r,
                   tabledata "Report Layout Selection" = r,
+                  tabledata "Custom Report Layout" = r,
                   tabledata "BJF Print Buffer" = rimd;
     trigger OnRun()
     begin
@@ -125,15 +126,23 @@ codeunit 77703 "BJF Scheduled Task Runner"
     local procedure RenderReportToPdf(ReportID: Integer; RecordId: RecordId; CustomReportLayoutCode: Code[20]; ReportLayoutName: Text[250]; ReportLayoutAppID: Guid; var TempBlob: Codeunit "Temp Blob")
     var
         ReportLayoutSelection: Record "Report Layout Selection";
+        CustomReportLayout: Record "Custom Report Layout";
         RecRef: RecordRef;
         OutStr: OutStream;
+        LayoutCode: Code[20];
     begin
-        // Prefer modern named layout over legacy custom layout code
-        if ReportLayoutName <> '' then
-            ReportLayoutSelection.SetTempLayoutSelected(ReportLayoutName, ReportLayoutAppID)
-        else
-            if CustomReportLayoutCode <> '' then
-                ReportLayoutSelection.SetTempLayoutSelected(CustomReportLayoutCode);
+        LayoutCode := CustomReportLayoutCode;
+
+        // If a named layout is specified, look up its custom report layout code
+        if (LayoutCode = '') and (ReportLayoutName <> '') then begin
+            CustomReportLayout.SetRange("Report ID", ReportID);
+            CustomReportLayout.SetRange(Description, CopyStr(ReportLayoutName, 1, MaxStrLen(CustomReportLayout.Description)));
+            if CustomReportLayout.FindFirst() then
+                LayoutCode := CustomReportLayout.Code;
+        end;
+
+        if LayoutCode <> '' then
+            ReportLayoutSelection.SetTempLayoutSelected(LayoutCode);
 
         RecRef.Get(RecordId);
         TempBlob.CreateOutStream(OutStr);
