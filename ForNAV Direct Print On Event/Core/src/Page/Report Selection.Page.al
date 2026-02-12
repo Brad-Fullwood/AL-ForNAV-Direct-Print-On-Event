@@ -78,6 +78,8 @@ page 77704 "BJF Report Selection"
                     Caption = 'Trigger';
                     ToolTip = 'Specifies the printing trigger (when to print).';
                     ShowMandatory = true;
+                    Lookup = true;
+                    Editable = false;
 
                     trigger OnLookup(var Text: Text) Result: Boolean
                     var
