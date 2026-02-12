@@ -26,13 +26,14 @@ page 77700 "BJF Source Table Mappings"
             repeater(Group)
             {
                 IndentationColumn = Rec.Indentation;
-                IndentationControls = "Source Table";
+                IndentationControls = "Source Description";
                 ShowAsTree = true;
 
-                field("Provider No."; Rec."Provider No.")
+                field("Source Description"; Rec."Source Description")
                 {
                     Style = Strong;
-                    ToolTip = 'Specifies the provider that registered this mapping.';
+                    StyleExpr = IsHeaderRow;
+                    ToolTip = 'Description of the provider, trigger, or report set.';
                 }
                 field("Mapping Type"; Rec."Mapping Type")
                 {
@@ -44,9 +45,10 @@ page 77700 "BJF Source Table Mappings"
                     Style = Favorable;
                     ToolTip = 'The Business Central table that can be used as a report data source.';
                 }
-                field("Source Description"; Rec."Source Description")
+                field("Provider No."; Rec."Provider No.")
                 {
-                    ToolTip = 'Description of the trigger or report set.';
+                    Visible = false;
+                    ToolTip = 'Specifies the provider that registered this mapping.';
                 }
                 field("Table No."; Rec."Table No.")
                 {
@@ -61,4 +63,12 @@ page 77700 "BJF Source Table Mappings"
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        IsHeaderRow := (Rec.Indentation = 0);
+    end;
+
+    var
+        IsHeaderRow: Boolean;
 }

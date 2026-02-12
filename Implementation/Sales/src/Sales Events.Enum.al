@@ -16,7 +16,7 @@ enum 77730 "BJF Sales Events"
     {
         Caption = 'After posting sales invoice';
     }
-    value(3; "OnAfterPostSalesShipment")
+    value(3; "AfterPostSalesShipment")
     {
         Caption = 'After posting sales shipment';
     }

@@ -35,9 +35,16 @@ codeunit 77703 "BJF Scheduled Task Runner"
         Success: Boolean;
         PrintJobFailedMsg: Label 'Print job failed for Report %1', Comment = '%1 = Report ID';
     begin
-        // Update status to Processing
+        // Concurrency guard: lock, re-read, and verify status before proceeding
+        PrintBuffer.LockTable();
+        if not PrintBuffer.Get(PrintBuffer."Entry No.") then
+            exit;
+        if PrintBuffer.Status <> Enum::"BJF Print Buffer Status"::Pending then
+            exit;
+
         PrintBuffer.Status := Enum::"BJF Print Buffer Status"::Processing;
         PrintBuffer.Modify(false);
+        Commit();
 
         // Attempt processing
         Success := this.TryProcessPrintRequest(PrintBuffer);
@@ -94,7 +101,11 @@ codeunit 77703 "BJF Scheduled Task Runner"
         if not RecRef.Get(PrintBuffer."Source Record") then
             Error(SourceRecordNotFoundErr, PrintBuffer."Source Record");
 
-        this.RenderReportToPdf(PrintBuffer."Report ID", RecRef.RecordId(), PrintBuffer."Custom Report Layout Code", TempBlob);
+        this.RenderReportToPdf(
+            PrintBuffer."Report ID", RecRef.RecordId(),
+            PrintBuffer."Custom Report Layout Code",
+            PrintBuffer."Report Layout Name", PrintBuffer."Report Layout App ID",
+            TempBlob);
 
         this.CreatePrintQueueEntryFromStream(
             PrintBuffer."Report ID",
@@ -111,14 +122,18 @@ codeunit 77703 "BJF Scheduled Task Runner"
         );
     end;
 
-    local procedure RenderReportToPdf(ReportID: Integer; RecordId: RecordId; CustomReportLayoutCode: Code[20]; var TempBlob: Codeunit "Temp Blob")
+    local procedure RenderReportToPdf(ReportID: Integer; RecordId: RecordId; CustomReportLayoutCode: Code[20]; ReportLayoutName: Text[250]; ReportLayoutAppID: Guid; var TempBlob: Codeunit "Temp Blob")
     var
         ReportLayoutSelection: Record "Report Layout Selection";
         RecRef: RecordRef;
         OutStr: OutStream;
     begin
-        if CustomReportLayoutCode <> '' then
-            ReportLayoutSelection.SetTempLayoutSelected(CustomReportLayoutCode);
+        // Prefer modern named layout over legacy custom layout code
+        if ReportLayoutName <> '' then
+            ReportLayoutSelection.SetTempLayoutSelected(ReportLayoutName, ReportLayoutAppID)
+        else
+            if CustomReportLayoutCode <> '' then
+                ReportLayoutSelection.SetTempLayoutSelected(CustomReportLayoutCode);
 
         RecRef.Get(RecordId);
         TempBlob.CreateOutStream(OutStr);
@@ -142,7 +157,7 @@ codeunit 77703 "BJF Scheduled Task Runner"
 
         DocumentBlob.CreateInStream(InStr);
 
-        PrinterSettings := this.CreatePrinterSettings(LocalPrinterName, QtyToPrint);
+        PrinterSettings := this.CreatePrinterSettings(CloudPrinterName, QtyToPrint);
 
         // Get the report name
         AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Report);
@@ -155,15 +170,15 @@ codeunit 77703 "BJF Scheduled Task Runner"
         ForNavPrintQueue.Create(ReportId, CloudPrinterName, LocalPrinterName, InStr, PrinterSettings, ReportName, ForNavPrintQueue.ContentType::PDF);
     end;
 
-    local procedure CreatePrinterSettings(PrinterName: Text[250]; QtyToPrint: Integer): Text
+    local procedure CreatePrinterSettings(CloudPrinterName: Text; QtyToPrint: Integer): Text
     var
         LocalPrinter: Record "ForNAV Local Printer";
         JsonPrinterSettings: JsonObject;
         PrinterSettings: Text;
-        LocalPrinterErr: Label 'No local printer found for %1', Comment = '%1 = Printer Name';
+        LocalPrinterErr: Label 'No local printer found for %1', Comment = '%1 = Cloud Printer Name';
     begin
-        if not LocalPrinter.Get(PrinterName) then
-            Error(LocalPrinterErr, PrinterName);
+        if not LocalPrinter.Get(CloudPrinterName) then
+            Error(LocalPrinterErr, CloudPrinterName);
 
         JsonPrinterSettings := LocalPrinter.PrinterSetting();
         if JsonPrinterSettings.Contains('Copies') then
@@ -181,7 +196,7 @@ codeunit 77703 "BJF Scheduled Task Runner"
     /// <param name="ReportID">The report ID that was printed.</param>
     /// <param name="SourceRecordID">The source record that was printed.</param>
     /// <param name="Message">Success message.</param>
-    [IntegrationEvent(false, false)]
+    [IntegrationEvent(false, false, true)]
     local procedure OnPrintJobCompleted(ReportID: Integer; SourceRecordID: RecordId; Message: Text[250])
     begin
     end;
@@ -193,7 +208,7 @@ codeunit 77703 "BJF Scheduled Task Runner"
     /// <param name="SourceRecordID">The source record that was being printed.</param>
     /// <param name="Message">Error message.</param>
     /// <param name="ErrorDetails">Detailed error information.</param>
-    [IntegrationEvent(false, false)]
+    [IntegrationEvent(false, false, true)]
     local procedure OnPrintJobFailed(ReportID: Integer; SourceRecordID: RecordId; Message: Text[250]; ErrorDetails: Text)
     begin
     end;

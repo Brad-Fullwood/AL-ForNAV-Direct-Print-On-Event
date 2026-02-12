@@ -21,7 +21,7 @@ codeunit 77753 "BJF Warehouse Print Events"
             exit;
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Warehouse Label Sets"::"Whse Shipment Posted "), Format(Enum::"BJF Warehouse Events"::AfterPostWhseShip));
+        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Warehouse Label Sets"::"Whse Shipment Posted"), Format(Enum::"BJF Warehouse Events"::AfterPostWhseShip));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Posted Whse. Receipt Header", OnAfterInsertEvent, '', false, false)]
@@ -33,6 +33,6 @@ codeunit 77753 "BJF Warehouse Print Events"
             exit;
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Warehouse Label Sets"::"Whse Receipt Posted"), Format(Enum::"BJF Warehouse Events"::AfterPostWhseReceipt));
+        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Warehouse Label Sets"::"Whse Receipt Posted"), Format(Enum::"BJF Warehouse Events"::AfterPostWhseReceipt));
     end;
 }

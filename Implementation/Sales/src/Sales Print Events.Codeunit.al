@@ -28,10 +28,10 @@ codeunit 77735 "BJF Sales Print Events"
         RecRef.SetRecFilter();
 
         if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
-            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::Sales), Format(Enum::"BJF Sales Events"::AfterPostSalesOrder));
+            this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Sales Label Sets"::Sales), Format(Enum::"BJF Sales Events"::AfterPostSalesOrder));
 
         if SalesHeader."Document Type" = SalesHeader."Document Type"::Invoice then
-            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::Sales), Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice));
+            this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Sales Label Sets"::Sales), Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Invoice Header", OnAfterInsertEvent, '', false, false)]
@@ -44,7 +44,7 @@ codeunit 77735 "BJF Sales Print Events"
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
 
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice));
+        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Shipment Header", OnAfterInsertEvent, '', false, false)]
@@ -57,7 +57,7 @@ codeunit 77735 "BJF Sales Print Events"
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
 
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), Format(Enum::"BJF Sales Events"::OnAfterPostSalesShipment));
+        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), Format(Enum::"BJF Sales Events"::AfterPostSalesShipment));
     end;
 
 }

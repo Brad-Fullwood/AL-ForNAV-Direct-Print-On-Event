@@ -18,7 +18,7 @@ page 77704 "BJF Report Selection"
     SourceTable = "BJF Automatic Printing";
     UsageCategory = Administration;
     Extensible = false;
-    SourceTableView = sorting("Report Set No.", "Trigger No.", Sequence) order(descending);
+    SourceTableView = sorting("Report Set No.", "Trigger No.", Sequence) order(ascending);
     Permissions = tabledata "BJF Printing Trigger" = r,
                   tabledata "BJF Report Set" = r,
                   tabledata "BJF Source Table Mapping" = r;

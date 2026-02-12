@@ -15,7 +15,6 @@ table 77721 "BJF Log Setup"
         field(1; "Primary Key"; Code[10])
         {
             Caption = 'Primary Key';
-            NotBlank = true;
             AllowInCustomizations = Never;
             ToolTip = 'Specifies the primary key for the log setup record.';
         }

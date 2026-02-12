@@ -16,7 +16,7 @@ enum 77740 "BJF Purchase Events"
     {
         Caption = 'After posting purchase invoice';
     }
-    value(3; "OnAfterPostPurchaseReceipt")
+    value(3; "AfterPostPurchaseReceipt")
     {
         Caption = 'After posting purchase receipt';
     }

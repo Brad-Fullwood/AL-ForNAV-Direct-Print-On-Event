@@ -95,13 +95,13 @@ page 77720 "BJF Log Entries"
     begin
         case Rec."Log Level" of
             Rec."Log Level"::Error, Rec."Log Level"::Critical:
-                this.LogLevelStyle := Format(PageStyle::Unfavorable);
+                this.LogLevelStyle := 'Unfavorable';
             Rec."Log Level"::Warning:
-                this.LogLevelStyle := Format(PageStyle::Ambiguous);
+                this.LogLevelStyle := 'Ambiguous';
             Rec."Log Level"::Information:
-                this.LogLevelStyle := Format(PageStyle::Favorable);
+                this.LogLevelStyle := 'Favorable';
             else
-                this.LogLevelStyle := Format(PageStyle::Standard);
+                this.LogLevelStyle := 'Standard';
         end;
     end;
 }

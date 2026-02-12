@@ -4,8 +4,8 @@ namespace BradFullwood.ForNAV.Core;
 /// Codeunit for scheduling tasks for print buffer records.
 /// </summary>
 /// <remarks>
-/// This codeunit is used to schedule tasks for print buffer records.
-/// It is used to ensure that the tasks are scheduled for the print buffer records.
+/// Subscribes to Print Buffer inserts and schedules background tasks via TaskScheduler.
+/// Also serves as the failure codeunit — OnRun is called by the platform when the task runner fails.
 /// </remarks>
 codeunit 77704 "BJF Task Scheduling"
 {
@@ -13,84 +13,58 @@ codeunit 77704 "BJF Task Scheduling"
     Access = Public;
     TableNo = "BJF Print Buffer";
 
-    /// <summary>
-    /// Schedule a task for a print buffer record.
-    /// </summary>
-    /// <remarks>
-    /// This procedure is called by the OnAfterInsertEvent trigger in the Print Management codeunit.
-    /// </remarks>
-    /// <param name="Rec">The print buffer record to schedule the task for.</param>
-    /// <param name="RunTrigger">Whether the trigger was run.</param>
-
     [EventSubscriber(ObjectType::Table, Database::"BJF Print Buffer", OnAfterInsertEvent, '', false, false)]
     local procedure ScheduleTaskForPrintBuffer(var Rec: Record "BJF Print Buffer"; RunTrigger: Boolean)
-    var
-        TaskId: Guid;
     begin
         if not RunTrigger then
             exit;
 
-        // Skip if already processing or completed
         if Rec.Status <> Enum::"BJF Print Buffer Status"::Pending then
             exit;
 
-        // Schedule task to run immediately
-        // TaskScheduler automatically handles retries (up to 99 times in BC Online)
+        // Wrapped in TryFunction so a scheduling failure never aborts the calling transaction
+        if not TryCreateScheduledTask(Rec) then
+            OnScheduleTaskFailed(Rec);
+    end;
+
+    [TryFunction]
+    local procedure TryCreateScheduledTask(var PrintBuffer: Record "BJF Print Buffer")
+    var
+        TaskId: Guid;
+    begin
+        // Small delay (5 seconds) gives the posting transaction time to commit
+        // before the task session tries to read the source record (batched insert safety)
         TaskId := TaskScheduler.CreateTask(
             Codeunit::"BJF Scheduled Task Runner",
-            77704, // Failure codeunit - This codeunit will be called if the task fails via OnRun trigger.
+            Codeunit::"BJF Task Scheduling", // This codeunit handles failures via OnRun
             true, // IsReady
             CompanyName(),
-            CurrentDateTime(), // Run immediately
-            Rec.RecordId()
+            CurrentDateTime() + 5000, // 5 second delay for transaction commit safety
+            PrintBuffer.RecordId()
         );
     end;
 
     /// <summary>
-    /// Trigger to mark a print buffer record as failed if the scheduling fails.
+    /// Failure handler — called by the platform when the Scheduled Task Runner fails.
     /// </summary>
-    /// <remarks>
-    /// This trigger is only called by CreateTask in ScheduleTaskForPrintBuffer if the scheduling fails.
-    /// </remarks>
     trigger OnRun()
     begin
-        this.OnBeforeScheduleTask(Rec);
-
-        this.SchedulingFailed(Rec);
-
-        this.OnAfterScheduleTask(Rec);
+        this.HandleTaskFailure(Rec);
     end;
 
-    local procedure SchedulingFailed(var Rec: Record "BJF Print Buffer")
+    local procedure HandleTaskFailure(var PrintBuffer: Record "BJF Print Buffer")
     begin
-        this.OnScheduleTaskFailed(Rec);
+        this.OnScheduleTaskFailed(PrintBuffer);
 
-        Rec.Status := Enum::"BJF Print Buffer Status"::Failed;
-        Rec.Modify(false);
+        PrintBuffer.Status := Enum::"BJF Print Buffer Status"::Failed;
+        PrintBuffer."Error Message" := CopyStr(GetLastErrorText(), 1, MaxStrLen(PrintBuffer."Error Message"));
+        PrintBuffer.Modify(false);
     end;
 
     /// <summary>
-    /// Event raised before a task is scheduled.
+    /// Event raised if task scheduling or execution fails.
     /// </summary>
-    /// <param name="Rec">The print buffer record that is being scheduled.</param>
-    [IntegrationEvent(false, false, true)]
-    local procedure OnBeforeScheduleTask(var Rec: Record "BJF Print Buffer")
-    begin
-    end;
-
-    /// <summary>
-    /// Event raised after a task is scheduled.
-    /// </summary>
-    /// <param name="Rec">The print buffer record that was scheduled.</param>
-    [IntegrationEvent(false, false, true)]
-    local procedure OnAfterScheduleTask(var Rec: Record "BJF Print Buffer")
-    begin
-    end;
-
-    /// <summary>
-    /// Event raised if the task scheduling fails.
-    /// </summary>
-    /// <param name="Rec">The print buffer record that failed to be scheduled.</param>
+    /// <param name="Rec">The print buffer record that failed.</param>
     [IntegrationEvent(false, false, true)]
     local procedure OnScheduleTaskFailed(var Rec: Record "BJF Print Buffer")
     begin

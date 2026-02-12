@@ -19,18 +19,18 @@ codeunit 77752 "BJF Warehouse Implementation" implements "I-BJF Direct Print Int
         DefaultActive := true;
     end;
 
-    procedure RegisterLabelGroups(var Helper: Codeunit "BJF Interface Utils")
+    procedure RegisterReportSets(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Warehouse Label Sets"::"Whse Shipment Posted "), 'Whse Shipment Posted', Database::"Posted Whse. Shipment Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Warehouse Label Sets"::"Whse Receipt Posted"), 'Whse Receipt Posted', Database::"Posted Whse. Receipt Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Warehouse Label Sets"::"Whse Shipment Posted"), 'Whse Shipment Posted', Database::"Posted Whse. Shipment Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Warehouse Label Sets"::"Whse Receipt Posted"), 'Whse Receipt Posted', Database::"Posted Whse. Receipt Header");
     end;
 
-    procedure RegisterEvents(var Helper: Codeunit "BJF Interface Utils")
+    procedure RegisterTriggers(var Helper: Codeunit "BJF Interface Utils")
     begin
         Helper.AddTable(Database::"Posted Whse. Shipment Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Warehouse Events"::AfterPostWhseShip), 'After posting warehouse shipment');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Warehouse Events"::AfterPostWhseShip), 'After posting warehouse shipment');
 
         Helper.AddTable(Database::"Posted Whse. Receipt Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Warehouse Events"::AfterPostWhseReceipt), 'After posting warehouse receipt');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Warehouse Events"::AfterPostWhseReceipt), 'After posting warehouse receipt');
     end;
 }

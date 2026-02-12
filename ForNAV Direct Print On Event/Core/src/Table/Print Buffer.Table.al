@@ -73,6 +73,7 @@ table 77704 "BJF Print Buffer"
         {
             Caption = 'Status';
             Editable = false;
+            InitValue = Pending;
         }
         field(12; "Error Message"; Text[2048])
         {

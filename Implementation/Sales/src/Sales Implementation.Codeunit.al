@@ -20,24 +20,24 @@ codeunit 77734 "BJF Sales Implementation" implements "I-BJF Direct Print Interfa
         DefaultActive := true;
     end;
 
-    procedure RegisterLabelGroups(var Helper: Codeunit "BJF Interface Utils")
+    procedure RegisterReportSets(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::Sales), 'Sales', Database::"Sales Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), 'Sales Posted', Database::"Sales Invoice Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), 'Sales Shipment Posted', Database::"Sales Shipment Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Sales Label Sets"::Sales), 'Sales', Database::"Sales Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), 'Sales Posted', Database::"Sales Invoice Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), 'Sales Shipment Posted', Database::"Sales Shipment Header");
     end;
 
-    procedure RegisterEvents(var Helper: Codeunit "BJF Interface Utils")
+    procedure RegisterTriggers(var Helper: Codeunit "BJF Interface Utils")
     begin
         Helper.AddTable(Database::"Sales Header");
         Helper.AddTable(Database::"Sales Invoice Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesOrder), 'After posting sales order');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesOrder), 'After posting sales order');
 
         Helper.AddTable(Database::"Sales Header");
         Helper.AddTable(Database::"Sales Invoice Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice), 'After posting sales invoice');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice), 'After posting sales invoice');
 
         Helper.AddTable(Database::"Sales Shipment Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Sales Events"::OnAfterPostSalesShipment), 'After posting sales shipment');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesShipment), 'After posting sales shipment');
     end;
 }

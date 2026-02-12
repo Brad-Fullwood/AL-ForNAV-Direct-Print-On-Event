@@ -140,23 +140,6 @@ codeunit 77720 "BJF Log Events"
                  '', Rec.RecordId(), '', 0, '');
     end;
 
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"BJF Task Scheduling", OnBeforeScheduleTask, '', false, false)]
-    local procedure OnBeforeScheduleTask(var Rec: Record "BJF Print Buffer")
-    begin
-        this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Buffer Processing",
-                 'Scheduling task for print buffer entry - Entry No: %1, Report ID: %2',
-                 '', Rec.RecordId(), '', 0, '');
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"BJF Task Scheduling", OnAfterScheduleTask, '', false, false)]
-    local procedure OnAfterScheduleTask(var Rec: Record "BJF Print Buffer")
-    begin
-        this.LoggingManager.Log(Enum::"BJF Log Level"::Information, Enum::"BJF Log Event Type"::"Buffer Processing",
-                 'Task scheduled for print buffer entry - Entry No: %1, Report ID: %2',
-                 '', Rec.RecordId(), '', 0, '');
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"BJF Task Scheduling", OnScheduleTaskFailed, '', false, false)]
     local procedure OnScheduleTaskFailed(var Rec: Record "BJF Print Buffer")
     begin

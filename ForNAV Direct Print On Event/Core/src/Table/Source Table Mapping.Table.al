@@ -39,7 +39,6 @@ table 77701 "BJF Source Table Mapping"
         field(3; "Source Code"; Code[50])
         {
             Caption = 'Source Code';
-            NotBlank = true;
             ToolTip = 'Specifies the code of the trigger or report set.';
             AllowInCustomizations = Always;
 
@@ -70,7 +69,6 @@ table 77701 "BJF Source Table Mapping"
         field(5; "Table No."; Integer)
         {
             Caption = 'Table No.';
-            NotBlank = true;
             ToolTip = 'Specifies the Business Central table number that can be used as a data source.';
             TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Table));
             AllowInCustomizations = Always;

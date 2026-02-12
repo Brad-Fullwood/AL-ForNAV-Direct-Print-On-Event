@@ -20,14 +20,17 @@ codeunit 77741 "BJF Purchase Print Events"
     var
         RecRef: RecordRef;
     begin
+        if CommitIsSupressed then
+            exit; // Skip printing in preview mode or when commit is suppressed
+
         RecRef.GetTable(PurchaseHeader);
         RecRef.SetRecFilter();
 
         if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
-            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Purchase Label Sets"::Purchase), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseOrder));
+            this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::Purchase), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseOrder));
 
         if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
-            this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Purchase Label Sets"::Purchase), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice));
+            this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::Purchase), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purch. Inv. Header", OnAfterInsertEvent, '', false, false)]
@@ -39,7 +42,7 @@ codeunit 77741 "BJF Purchase Print Events"
             exit;
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase"), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice));
+        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase"), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice));
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purch. Rcpt. Header", OnAfterInsertEvent, '', false, false)]
@@ -51,6 +54,6 @@ codeunit 77741 "BJF Purchase Print Events"
             exit;
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
-        this.PrintMgmt.QueuePrintLabels(RecRef, Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase Receipt"), Format(Enum::"BJF Purchase Events"::OnAfterPostPurchaseReceipt));
+        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase Receipt"), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseReceipt));
     end;
 }

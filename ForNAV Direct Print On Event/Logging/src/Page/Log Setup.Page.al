@@ -106,9 +106,10 @@ page 77723 "BJF Log Setup"
     begin
         Rec.Reset();
         if not Rec.Get('') then begin
-            Rec := Rec.GetSetup();
+            Rec.Init();
+            Rec."Primary Key" := '';
             Rec.Insert(true);
         end;
-        Rec.SetFilter("Today Filter", '%1', 0DT);
+        Rec.SetFilter("Today Filter", '%1..%2', CreateDateTime(Today(), 0T), CreateDateTime(Today(), 235959T));
     end;
 }

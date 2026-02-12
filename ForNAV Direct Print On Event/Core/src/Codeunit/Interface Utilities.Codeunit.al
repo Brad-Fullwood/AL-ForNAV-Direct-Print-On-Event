@@ -12,7 +12,8 @@ codeunit 77701 "BJF Interface Utils"
     Permissions = tabledata "BJF Provider" = rimd,
                   tabledata "BJF Report Set" = rimd,
                   tabledata "BJF Printing Trigger" = rimd,
-                  tabledata "BJF Source Table Mapping" = rimd;
+                  tabledata "BJF Source Table Mapping" = rimd,
+                  tabledata "BJF Automatic Printing" = rd;
 
     var
         CurrentProvider: Enum "BJF Direct Print Provider";
@@ -115,7 +116,26 @@ codeunit 77701 "BJF Interface Utils"
         else
             ProviderRec.Modify(true);
 
+        // Insert provider header row for tree view (indentation 0)
+        this.InsertProviderHeaderMapping(Provider, Description);
+
         this.OnAfterStartProviderRegistration(Provider, Description);
+    end;
+
+    local procedure InsertProviderHeaderMapping(Provider: Enum "BJF Direct Print Provider"; Description: Text[100])
+    var
+        SourceTableMapping: Record "BJF Source Table Mapping";
+    begin
+        SourceTableMapping.Init();
+        SourceTableMapping."Provider No." := Provider;
+        SourceTableMapping."Source Description" := Description;
+        SourceTableMapping.Indentation := 0;
+
+        SourceTableMapping.SetRecFilter();
+        if SourceTableMapping.IsEmpty() then
+            SourceTableMapping.Insert(false)
+        else
+            SourceTableMapping.Modify(false);
     end;
 
 
@@ -200,9 +220,13 @@ codeunit 77701 "BJF Interface Utils"
         Triggers: Record "BJF Printing Trigger";
         ReportSets: Record "BJF Report Set";
         Mappings: Record "BJF Source Table Mapping";
+        AutoPrinting: Record "BJF Automatic Printing";
     begin
-        if not Providers.IsEmpty() then
-            Providers.DeleteAll(false);
+        if not AutoPrinting.IsEmpty() then
+            AutoPrinting.DeleteAll(false);
+
+        if not Mappings.IsEmpty() then
+            Mappings.DeleteAll(false);
 
         if not Triggers.IsEmpty() then
             Triggers.DeleteAll(false);
@@ -210,8 +234,8 @@ codeunit 77701 "BJF Interface Utils"
         if not ReportSets.IsEmpty() then
             ReportSets.DeleteAll(false);
 
-        if not Mappings.IsEmpty() then
-            Mappings.DeleteAll(false);
+        if not Providers.IsEmpty() then
+            Providers.DeleteAll(false);
     end;
 
     /// <summary>

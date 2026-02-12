@@ -180,8 +180,8 @@ table 77700 "BJF Automatic Printing"
         {
             Caption = 'Qty to Print';
             ToolTip = 'Specifies the default number of copies to print for this report selection.';
-            MinValue = 0;
-            InitValue = 0;
+            MinValue = 1;
+            InitValue = 1;
         }
     }
 

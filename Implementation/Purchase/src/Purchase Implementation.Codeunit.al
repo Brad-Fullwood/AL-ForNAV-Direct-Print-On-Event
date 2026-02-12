@@ -20,24 +20,24 @@ codeunit 77740 "BJF Purchase Implementation" implements "I-BJF Direct Print Inte
         DefaultActive := true;
     end;
 
-    procedure RegisterLabelGroups(var Helper: Codeunit "BJF Interface Utils")
+    procedure RegisterReportSets(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::Purchase), 'Purchase', Database::"Purchase Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase"), 'Purchase Posted', Database::"Purch. Inv. Header");
-        Helper.RegisterLabelGroup(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase Receipt"), 'Purchase Receipt Posted', Database::"Purch. Rcpt. Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Purchase Label Sets"::Purchase), 'Purchase', Database::"Purchase Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase"), 'Purchase Posted', Database::"Purch. Inv. Header");
+        Helper.RegisterReportSet(Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase Receipt"), 'Purchase Receipt Posted', Database::"Purch. Rcpt. Header");
     end;
 
-    procedure RegisterEvents(var Helper: Codeunit "BJF Interface Utils")
+    procedure RegisterTriggers(var Helper: Codeunit "BJF Interface Utils")
     begin
         Helper.AddTable(Database::"Purchase Header");
         Helper.AddTable(Database::"Purch. Inv. Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Purchase Events"::AfterPostPurchaseOrder), 'After posting purchase order');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Purchase Events"::AfterPostPurchaseOrder), 'After posting purchase order');
 
         Helper.AddTable(Database::"Purchase Header");
         Helper.AddTable(Database::"Purch. Inv. Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice), 'After posting purchase invoice');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice), 'After posting purchase invoice');
 
         Helper.AddTable(Database::"Purch. Rcpt. Header");
-        Helper.RegisterEventWithTables(Format(Enum::"BJF Purchase Events"::OnAfterPostPurchaseReceipt), 'After posting purchase receipt');
+        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Purchase Events"::AfterPostPurchaseReceipt), 'After posting purchase receipt');
     end;
 }

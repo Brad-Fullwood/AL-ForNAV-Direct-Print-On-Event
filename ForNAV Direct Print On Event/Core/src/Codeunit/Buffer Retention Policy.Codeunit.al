@@ -101,10 +101,12 @@ codeunit 77700 "BJF Print Buffer Ret. Policy"
         if not (RecRef.Number() in [Database::"BJF Print Buffer"]) then
             exit;
 
-        if (RecRef.GetFilters() = '') or (not RecRef.MarkedOnly()) then
+        if (RecRef.GetFilters() = '') or (not RecRef.MarkedOnly()) then begin
             RetentionPolicyLog.LogError(LogCategory::"Retention Policy - Apply", StrSubstNo(LogErr, RecRef.Number(), RecRef.Name()));
+            exit;
+        end;
 
-        RecRef.Delete(true);
+        RecRef.DeleteAll(true);
         Handled := true;
     end;
 }

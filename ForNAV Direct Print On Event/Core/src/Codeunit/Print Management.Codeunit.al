@@ -111,38 +111,6 @@ codeunit 77702 "BJF Print Management"
         exit(not AutoPrinting.IsEmpty());
     end;
 
-    /// <summary>
-    /// Trigger subscriber to schedule individual task for each Print Buffer insert.
-    /// </summary>
-    /// <remarks>
-    /// Uses TaskScheduler for invisible background processing with automatic retry.
-    /// </remarks>
-    /// <param name="Rec">The record that was inserted.</param>
-    /// <param name="RunTrigger">Whether the trigger was run.</param>
-    [EventSubscriber(ObjectType::Table, Database::"BJF Print Buffer", OnAfterInsertEvent, '', false, false)]
-    local procedure ScheduleTaskForPrintBuffer(var Rec: Record "BJF Print Buffer"; RunTrigger: Boolean)
-    var
-        TaskId: Guid;
-    begin
-        if not RunTrigger then
-            exit;
-
-        // Skip if already processing or completed
-        if Rec.Status <> Enum::"BJF Print Buffer Status"::Pending then
-            exit;
-
-        // Schedule task to run immediately
-        // TaskScheduler automatically handles retries (up to 99 times in BC Online)
-        TaskId := TaskScheduler.CreateTask(
-            Codeunit::"BJF Scheduled Task Runner",
-            0, // No failure codeunit - let TaskScheduler handle retries
-            true, // IsReady
-            CompanyName(),
-            CurrentDateTime(), // Run immediately
-            Rec.RecordId()
-        );
-    end;
-
     // Isolated events to avoid logging holding database locks
     [IntegrationEvent(false, false, true)]
     local procedure OnBeforeQueuePrintReports(RecRef: RecordRef; ReportSetNo: Code[50]; TriggerNo: Code[50])
