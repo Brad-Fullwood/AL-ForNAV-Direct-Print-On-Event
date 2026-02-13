@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Core;
 /// <summary>
 /// FactBox showing source tables linked to the selected trigger or report set.
 /// </summary>
-page 77706 "BJF Trigger Source Tables FactBox"
+page 77706 "BJF Trigger Source FactBox"
 {
     Caption = 'Source Tables';
     PageType = ListPart;

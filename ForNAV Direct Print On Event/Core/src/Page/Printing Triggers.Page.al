@@ -43,7 +43,7 @@ page 77702 "BJF Printing Triggers"
         }
         area(FactBoxes)
         {
-            part(SourceTables; "BJF Trigger Source Tables FactBox")
+            part(SourceTables; "BJF Trigger Source FactBox")
             {
                 Caption = 'Source Tables';
                 SubPageLink = "Mapping Type" = const(Trigger), "Source Code" = field("No."), "Provider No." = field("Provider No.");

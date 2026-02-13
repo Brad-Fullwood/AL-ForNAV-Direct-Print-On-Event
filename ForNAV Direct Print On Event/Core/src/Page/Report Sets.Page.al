@@ -43,7 +43,7 @@ page 77703 "BJF Report Sets"
         }
         area(FactBoxes)
         {
-            part(SourceTables; "BJF Trigger Source Tables FactBox")
+            part(SourceTables; "BJF Trigger Source FactBox")
             {
                 Caption = 'Source Tables';
                 SubPageLink = "Mapping Type" = const("Report Set"), "Source Code" = field("No."), "Provider No." = field("Provider No.");

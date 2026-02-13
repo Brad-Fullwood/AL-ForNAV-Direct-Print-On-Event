@@ -84,29 +84,25 @@ page 77704 "BJF Report Selection"
                     trigger OnLookup(var Text: Text) Result: Boolean
                     var
                         PrintingTrigger: Record "BJF Printing Trigger";
-                        ValidTableNos: List of [Integer];
+                        ReportSet: Record "BJF Report Set";
+                        TriggerFilter: Text;
                     begin
                         PrintingTrigger.Reset();
 
-                        // Early exit if no report set selected
-                        if this.LookUpReportSet = '' then
-                            exit(this.ShowTriggerLookup(PrintingTrigger));
+                        // Filter triggers by provider and matching source tables
+                        if (this.LookUpReportSet <> '') and ReportSet.Get(this.LookUpReportSet) then begin
+                            PrintingTrigger.SetRange("Provider No.", ReportSet."Provider No.");
+                            TriggerFilter := this.BuildValidTriggerFilter(ReportSet."Provider No.");
+                            if TriggerFilter <> '' then
+                                PrintingTrigger.SetFilter("No.", TriggerFilter);
+                        end;
 
-                        this.GetValidTableNumbers(ValidTableNos);
+                        if not (Page.RunModal(Page::"BJF Printing Triggers", PrintingTrigger) = Action::LookupOK) then
+                            exit(false);
 
-                        // Show all triggers if no valid tables found or if filtering would be too restrictive
-                        if ValidTableNos.Count() = 0 then
-                            exit(this.ShowTriggerLookup(PrintingTrigger));
-
-                        // Only apply filtering if we have valid table numbers
-                        this.MarkValidTriggers(PrintingTrigger, ValidTableNos);
-                        PrintingTrigger.MarkedOnly := true;
-
-                        Result := this.ShowTriggerLookup(PrintingTrigger);
-                        if not Result then
-                            exit;
-                        Rec.GetNextSequence();
+                        this.InsertTriggersFromSelection(PrintingTrigger);
                         CurrPage.Update(false);
+                        exit(true);
                     end;
                 }
                 field(ReportLayoutName; Rec."Report Layout Name")
@@ -201,59 +197,76 @@ page 77704 "BJF Report Selection"
             Rec.Validate("Report Set No.", this.LookUpReportSet);
     end;
 
-    local procedure GetValidTableNumbers(var ValidTableNos: List of [Integer])
+    local procedure BuildValidTriggerFilter(ProviderNo: Enum "BJF Direct Print Provider"): Text
     var
-        SourceTableMapping: Record "BJF Source Table Mapping";
+        ReportSetMapping: Record "BJF Source Table Mapping";
+        TriggerMapping: Record "BJF Source Table Mapping";
+        ValidTableNos: List of [Integer];
+        AddedTriggers: List of [Code[50]];
+        TriggerFilter: Text;
+        TableNo: Integer;
     begin
-        SourceTableMapping.Reset();
-        SourceTableMapping.SetRange("Mapping Type", Enum::"BJF Mapping Type"::"Report Set");
-        SourceTableMapping.SetRange("Source Code", this.LookUpReportSet);
-        if not SourceTableMapping.FindSet() then
-            exit;
+        ReportSetMapping.SetRange("Mapping Type", Enum::"BJF Mapping Type"::"Report Set");
+        ReportSetMapping.SetRange("Provider No.", ProviderNo);
+        ReportSetMapping.SetRange("Source Code", this.LookUpReportSet);
+        if not ReportSetMapping.FindSet() then
+            exit('');
 
         repeat
-            ValidTableNos.Add(SourceTableMapping."Table No.");
-        until SourceTableMapping.Next() = 0;
+            ValidTableNos.Add(ReportSetMapping."Table No.");
+        until ReportSetMapping.Next() = 0;
+
+        foreach TableNo in ValidTableNos do begin
+            TriggerMapping.Reset();
+            TriggerMapping.SetRange("Mapping Type", Enum::"BJF Mapping Type"::"Trigger");
+            TriggerMapping.SetRange("Provider No.", ProviderNo);
+            TriggerMapping.SetRange("Table No.", TableNo);
+            if TriggerMapping.FindSet() then
+                repeat
+                    if not AddedTriggers.Contains(TriggerMapping."Source Code") then begin
+                        AddedTriggers.Add(TriggerMapping."Source Code");
+                        if TriggerFilter <> '' then
+                            TriggerFilter += '|';
+                        TriggerFilter += TriggerMapping."Source Code";
+                    end;
+                until TriggerMapping.Next() = 0;
+        end;
+
+        exit(TriggerFilter);
     end;
 
-    local procedure MarkValidTriggers(var PrintingTrigger: Record "BJF Printing Trigger"; ValidTableNos: List of [Integer])
-    begin
-        if not PrintingTrigger.FindSet() then
-            exit;
-
-        repeat
-            if this.IsTriggerValidForTables(PrintingTrigger, ValidTableNos) then
-                PrintingTrigger.Mark := true;
-        until PrintingTrigger.Next() = 0;
-    end;
-
-    local procedure IsTriggerValidForTables(PrintingTrigger: Record "BJF Printing Trigger"; ValidTableNos: List of [Integer]): Boolean
+    local procedure InsertTriggersFromSelection(var PrintingTrigger: Record "BJF Printing Trigger")
     var
-        SourceTableMapping: Record "BJF Source Table Mapping";
+        AutoPrint: Record "BJF Automatic Printing";
+        IsFirst: Boolean;
     begin
-        SourceTableMapping.Reset();
-        SourceTableMapping.SetRange("Mapping Type", Enum::"BJF Mapping Type"::"Trigger");
-        SourceTableMapping.SetRange("Source Code", PrintingTrigger."No.");
-        SourceTableMapping.SetRange("Provider No.", PrintingTrigger."Provider No.");
+        IsFirst := true;
+        PrintingTrigger.MarkedOnly(true);
 
-        if not SourceTableMapping.FindSet() then
-            exit(false);
-
-        repeat
-            if ValidTableNos.Contains(SourceTableMapping."Table No.") then
-                exit(true);
-        until SourceTableMapping.Next() = 0;
-
-        exit(false);
-    end;
-
-    local procedure ShowTriggerLookup(var PrintingTrigger: Record "BJF Printing Trigger"): Boolean
-    begin
-        if not (Page.RunModal(Page::"BJF Printing Triggers", PrintingTrigger) = Action::LookupOK) then
-            exit(false);
-
-        Rec."Trigger No." := PrintingTrigger."No.";
-        exit(true);
+        if PrintingTrigger.FindSet() then begin
+            repeat
+                if IsFirst then begin
+                    Rec."Trigger No." := PrintingTrigger."No.";
+                    Rec.GetNextSequence();
+                    IsFirst := false;
+                end else begin
+                    AutoPrint.Init();
+                    AutoPrint."Report Set No." := Rec."Report Set No.";
+                    AutoPrint."Trigger No." := PrintingTrigger."No.";
+                    AutoPrint."Report ID" := Rec."Report ID";
+                    AutoPrint.GetNextSequence();
+                    AutoPrint."Qty to Print" := Rec."Qty to Print";
+                    AutoPrint."Report Layout Name" := Rec."Report Layout Name";
+                    AutoPrint."Report Layout AppID" := Rec."Report Layout AppID";
+                    AutoPrint.Insert(true);
+                end;
+            until PrintingTrigger.Next() = 0;
+        end else begin
+            // Single selection (no multi-select marks)
+            PrintingTrigger.MarkedOnly(false);
+            Rec."Trigger No." := PrintingTrigger."No.";
+            Rec.GetNextSequence();
+        end;
     end;
 
     local procedure SetUsageFilter()
