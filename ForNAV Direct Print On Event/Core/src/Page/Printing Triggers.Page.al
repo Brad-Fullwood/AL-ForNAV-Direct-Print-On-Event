@@ -15,6 +15,10 @@ page 77702 "BJF Printing Triggers"
     UsageCategory = None;
     InherentPermissions = x;
     Extensible = false;
+    Editable = false;
+    InsertAllowed = false;
+    ModifyAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {
@@ -22,10 +26,27 @@ page 77702 "BJF Printing Triggers"
         {
             repeater(General)
             {
+                field("Provider No."; Rec."Provider No.")
+                {
+                    ToolTip = 'Specifies which provider registered this trigger.';
+                }
                 field(Description; Rec.Description)
                 {
                     ToolTip = 'Specifies when this trigger fires (e.g., "Sales Shipment Posted").';
                 }
+                field("No."; Rec."No.")
+                {
+                    ToolTip = 'Specifies the unique code for this trigger.';
+                    Visible = false;
+                }
+            }
+        }
+        area(FactBoxes)
+        {
+            part(SourceTables; "BJF Trigger Source Tables FactBox")
+            {
+                Caption = 'Source Tables';
+                SubPageLink = "Mapping Type" = const(Trigger), "Source Code" = field("No."), "Provider No." = field("Provider No.");
             }
         }
     }
