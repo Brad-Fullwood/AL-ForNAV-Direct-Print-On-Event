@@ -22,22 +22,26 @@ codeunit 77734 "BJF Sales Implementation" implements "I-BJF Direct Print Interfa
 
     procedure RegisterReportSets(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterReportSet(Format(Enum::"BJF Sales Label Sets"::Sales), 'Sales', Database::"Sales Header");
-        Helper.RegisterReportSet(Format(Enum::"BJF Sales Label Sets"::"Sales Posted"), 'Sales Posted', Database::"Sales Invoice Header");
-        Helper.RegisterReportSet(Format(Enum::"BJF Sales Label Sets"::"Sales Shipment Posted"), 'Sales Shipment Posted', Database::"Sales Shipment Header");
+        Helper.RegisterReportSet('SALES', 'Sales', Database::"Sales Header");
+        Helper.RegisterReportSet('SALES-POSTED', 'Sales Posted', Database::"Sales Invoice Header");
+        Helper.RegisterReportSet('SALES-SHIPMENT-POSTED', 'Sales Shipment Posted', Database::"Sales Shipment Header");
     end;
 
     procedure RegisterTriggers(var Helper: Codeunit "BJF Interface Utils")
     begin
         Helper.AddTable(Database::"Sales Header");
         Helper.AddTable(Database::"Sales Invoice Header");
-        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesOrder), 'After posting sales order');
+        Helper.RegisterTriggerWithTables('AFTER-POST-SALES-ORDER', 'After posting sales order');
 
         Helper.AddTable(Database::"Sales Header");
         Helper.AddTable(Database::"Sales Invoice Header");
-        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesInvoice), 'After posting sales invoice');
+        Helper.RegisterTriggerWithTables('AFTER-POST-SALES-INVOICE', 'After posting sales invoice');
 
         Helper.AddTable(Database::"Sales Shipment Header");
-        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Sales Events"::AfterPostSalesShipment), 'After posting sales shipment');
+        Helper.RegisterTriggerWithTables('AFTER-POST-SALES-SHIPMENT', 'After posting sales shipment');
+        // A reprint requested by a user or another extension, through "BJF Print Management".QueuePrintReports.
+        Helper.AddTable(Database::"Sales Invoice Header");
+        Helper.AddTable(Database::"Sales Shipment Header");
+        Helper.RegisterTriggerWithTables('SALES-REPRINT', 'Manual reprint (sales)');
     end;
 }

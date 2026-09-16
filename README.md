@@ -226,6 +226,26 @@ The report set and trigger codes you pass to `QueuePrintReports` must match what
 
 ---
 
+## Report set and trigger codes
+
+The codes stored in Direct Print Setup are fixed strings, not enum captions, so a language change cannot break a rule. Use them when calling `QueuePrintReports` from your own extension.
+
+| Module | Report sets | Triggers |
+|---|---|---|
+| Sales | `SALES` (Sales Header), `SALES-POSTED` (Sales Invoice Header), `SALES-SHIPMENT-POSTED` (Sales Shipment Header) | `AFTER-POST-SALES-ORDER`, `AFTER-POST-SALES-INVOICE`, `AFTER-POST-SALES-SHIPMENT`, `SALES-REPRINT` |
+| Purchase | `PURCHASE`, `PURCHASE-POSTED`, `PURCHASE-RECEIPT-POSTED` | `AFTER-POST-PURCHASE-ORDER`, `AFTER-POST-PURCHASE-INVOICE`, `AFTER-POST-PURCHASE-RECEIPT`, `PURCHASE-REPRINT` |
+| Warehouse | `WHSE-SHIPMENT-POSTED`, `WHSE-RECEIPT-POSTED` | `AFTER-POST-WHSE-SHIPMENT`, `AFTER-POST-WHSE-RECEIPT`, `WHSE-REPRINT` |
+
+The `*-REPRINT` triggers never fire on their own. They exist so a "Reprint" action or a device button can queue the same report through the same printer selection:
+
+```al
+RecRef.GetTable(SalesShipmentHeader);
+RecRef.SetRecFilter();
+PrintMgmt.QueuePrintReports(RecRef, 'SALES-SHIPMENT-POSTED', 'SALES-REPRINT');
+```
+
+A rule for the report set and the reprint trigger must exist in Setup Reports, like any other trigger.
+
 ## Object ID Ranges
 
 | Module | Range |

@@ -7,6 +7,7 @@ page 77706 "BJF Trigger Source FactBox"
 {
     Caption = 'Source Tables';
     PageType = ListPart;
+    ApplicationArea = All;
     SourceTable = "BJF Source Table Mapping";
     Editable = false;
     InsertAllowed = false;

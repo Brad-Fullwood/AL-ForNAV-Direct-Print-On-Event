@@ -7,6 +7,7 @@ page 77705 "BJF Getting Started FactBox"
 {
     Caption = 'Getting Started';
     PageType = CardPart;
+    ApplicationArea = All;
     Editable = false;
     Extensible = false;
 

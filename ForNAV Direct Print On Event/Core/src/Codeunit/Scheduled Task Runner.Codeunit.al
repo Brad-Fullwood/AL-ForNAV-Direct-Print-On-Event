@@ -149,7 +149,7 @@ codeunit 77703 "BJF Scheduled Task Runner"
         Report.SaveAs(ReportID, '', ReportFormat::Pdf, OutStr, RecRef);
     end;
 
-    local procedure CreatePrintQueueEntryFromStream(ReportId: Integer; CloudPrinterName: Text; LocalPrinterName: Text[250]; var DocumentBlob: Codeunit "Temp Blob"; QtyToPrint: Integer)
+    local procedure CreatePrintQueueEntryFromStream(ReportId: Integer; CloudPrinterName: Text[250]; LocalPrinterName: Text[250]; var DocumentBlob: Codeunit "Temp Blob"; QtyToPrint: Integer)
     var
         ForNavPrintQueue: Record "ForNAV DirPrt Queue";
         AllObjWithCaption: Record AllObjWithCaption;
@@ -179,7 +179,7 @@ codeunit 77703 "BJF Scheduled Task Runner"
         ForNavPrintQueue.Create(ReportId, CloudPrinterName, LocalPrinterName, InStr, PrinterSettings, ReportName, ForNavPrintQueue.ContentType::PDF);
     end;
 
-    local procedure CreatePrinterSettings(CloudPrinterName: Text; QtyToPrint: Integer): Text
+    local procedure CreatePrinterSettings(CloudPrinterName: Text[250]; QtyToPrint: Integer): Text
     var
         LocalPrinter: Record "ForNAV Local Printer";
         JsonPrinterSettings: JsonObject;

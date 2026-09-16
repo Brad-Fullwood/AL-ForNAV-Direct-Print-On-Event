@@ -95,6 +95,24 @@ codeunit 77702 "BJF Print Management"
         until AutoPrinting.Next() = 0;
     end;
 
+    /// <summary>
+    /// Whether Setup Reports holds at least one rule for the report set and trigger, so a caller
+    /// that queues on demand (a reprint action) can tell the user when nothing is set up instead
+    /// of queuing silently into nothing.
+    /// </summary>
+    /// <param name="ReportSetNo">The report set (what to print).</param>
+    /// <param name="TriggerNo">The printing trigger (when to print).</param>
+    /// <returns>True when a rule with a report exists for the pair.</returns>
+    procedure HasRule(ReportSetNo: Code[50]; TriggerNo: Code[50]): Boolean
+    var
+        AutoPrinting: Record "BJF Automatic Printing";
+    begin
+        AutoPrinting.SetRange("Report Set No.", ReportSetNo);
+        AutoPrinting.SetRange("Trigger No.", TriggerNo);
+        AutoPrinting.SetFilter("Report ID", '<>0');
+        exit(not AutoPrinting.IsEmpty());
+    end;
+
     internal procedure IsTriggerEnabledForReportSet(ReportSetNo: Code[50]; TriggerNo: Code[50]): Boolean
     var
         ReportSet: Record "BJF Report Set";

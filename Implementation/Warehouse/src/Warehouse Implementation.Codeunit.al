@@ -21,16 +21,20 @@ codeunit 77752 "BJF Warehouse Implementation" implements "I-BJF Direct Print Int
 
     procedure RegisterReportSets(var Helper: Codeunit "BJF Interface Utils")
     begin
-        Helper.RegisterReportSet(Format(Enum::"BJF Warehouse Label Sets"::"Whse Shipment Posted"), 'Whse Shipment Posted', Database::"Posted Whse. Shipment Header");
-        Helper.RegisterReportSet(Format(Enum::"BJF Warehouse Label Sets"::"Whse Receipt Posted"), 'Whse Receipt Posted', Database::"Posted Whse. Receipt Header");
+        Helper.RegisterReportSet('WHSE-SHIPMENT-POSTED', 'Whse Shipment Posted', Database::"Posted Whse. Shipment Header");
+        Helper.RegisterReportSet('WHSE-RECEIPT-POSTED', 'Whse Receipt Posted', Database::"Posted Whse. Receipt Header");
     end;
 
     procedure RegisterTriggers(var Helper: Codeunit "BJF Interface Utils")
     begin
         Helper.AddTable(Database::"Posted Whse. Shipment Header");
-        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Warehouse Events"::AfterPostWhseShip), 'After posting warehouse shipment');
+        Helper.RegisterTriggerWithTables('AFTER-POST-WHSE-SHIPMENT', 'After posting warehouse shipment');
 
         Helper.AddTable(Database::"Posted Whse. Receipt Header");
-        Helper.RegisterTriggerWithTables(Format(Enum::"BJF Warehouse Events"::AfterPostWhseReceipt), 'After posting warehouse receipt');
+        Helper.RegisterTriggerWithTables('AFTER-POST-WHSE-RECEIPT', 'After posting warehouse receipt');
+        // A reprint requested by a user or another extension, through "BJF Print Management".QueuePrintReports.
+        Helper.AddTable(Database::"Posted Whse. Shipment Header");
+        Helper.AddTable(Database::"Posted Whse. Receipt Header");
+        Helper.RegisterTriggerWithTables('WHSE-REPRINT', 'Manual reprint (warehouse)');
     end;
 }

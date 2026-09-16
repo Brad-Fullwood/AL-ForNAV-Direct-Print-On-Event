@@ -27,10 +27,10 @@ codeunit 77741 "BJF Purchase Print Events"
         RecRef.SetRecFilter();
 
         if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
-            this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::Purchase), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseOrder));
+            this.PrintMgmt.QueuePrintReports(RecRef, 'PURCHASE', 'AFTER-POST-PURCHASE-ORDER');
 
         if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
-            this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::Purchase), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice));
+            this.PrintMgmt.QueuePrintReports(RecRef, 'PURCHASE', 'AFTER-POST-PURCHASE-INVOICE');
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purch. Inv. Header", OnAfterInsertEvent, '', false, false)]
@@ -42,7 +42,7 @@ codeunit 77741 "BJF Purchase Print Events"
             exit;
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
-        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase"), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseInvoice));
+        this.PrintMgmt.QueuePrintReports(RecRef, 'PURCHASE-POSTED', 'AFTER-POST-PURCHASE-INVOICE');
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purch. Rcpt. Header", OnAfterInsertEvent, '', false, false)]
@@ -54,6 +54,6 @@ codeunit 77741 "BJF Purchase Print Events"
             exit;
         RecRef.GetTable(Rec);
         RecRef.SetRecFilter();
-        this.PrintMgmt.QueuePrintReports(RecRef, Format(Enum::"BJF Purchase Label Sets"::"Posted Purchase Receipt"), Format(Enum::"BJF Purchase Events"::AfterPostPurchaseReceipt));
+        this.PrintMgmt.QueuePrintReports(RecRef, 'PURCHASE-RECEIPT-POSTED', 'AFTER-POST-PURCHASE-RECEIPT');
     end;
 }
