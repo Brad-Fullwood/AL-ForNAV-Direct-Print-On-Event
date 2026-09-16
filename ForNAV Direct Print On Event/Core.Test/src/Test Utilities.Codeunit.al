@@ -6,7 +6,7 @@ using BradFullwood.ForNAV.Core;
 /// Test utilities codeunit for Core extension tests.
 /// Provides helper methods for test data creation and common assertions.
 /// </summary>
-codeunit 77707 "BJF Test Utilities"
+codeunit 77507 "BJF Test Utilities"
 {
     Access = Internal;
     Permissions = tabledata "BJF Provider" = RIMD,

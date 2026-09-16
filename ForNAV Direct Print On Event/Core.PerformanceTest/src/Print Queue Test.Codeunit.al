@@ -6,7 +6,7 @@ using System.Tooling;
 /// BJF test for QueuePrintReports performance.
 /// Simulates high-volume report printing operations.
 /// </summary>
-codeunit 77820 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
+codeunit 77620 "BJF Print Queue Test" implements "BCPT Test Param. Provider"
 {
     InherentPermissions = x;
 

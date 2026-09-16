@@ -8,7 +8,7 @@ using BradFullwood.ForNAV.Core;
 /// Purchase-focused label sets provider.
 /// Handles all purchase document labeling and events.
 /// </summary>
-codeunit 77740 "BJF Purchase Implementation" implements "I-BJF Direct Print Interface"
+codeunit 77540 "BJF Purchase Implementation" implements "I-BJF Direct Print Interface"
 {
     Access = Internal;
     InherentPermissions = x;

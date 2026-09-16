@@ -2,7 +2,7 @@
   "id": "f0c43a0b-42a9-44af-bd36-5a7c3e52bfcd",
   "name": "ForNAV Direct Print - Warehouse",
   "publisher": "Brad Fullwood",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "brief": "Warehouse event provider for ForNAV Direct Print.",
   "description": "Provides automatic direct printing of ForNAV reports triggered by warehouse business events, such as posting warehouse shipments and receipts.",
   "privacyStatement": "",
@@ -15,7 +15,7 @@
       "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
       "name": "ForNAV Direct Print - Core",
       "publisher": "Brad Fullwood",
-      "version": "1.0.0.0"
+      "version": "1.0.0.2"
     }
   ],
   "screenshots": [],
@@ -24,8 +24,8 @@
   "runtime": "16.0",
   "idRanges": [
     {
-      "from": 77750,
-      "to": 77759
+      "from": 77550,
+      "to": 77559
     }
   ],
   "features": [

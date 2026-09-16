@@ -7,7 +7,7 @@ using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 
-codeunit 77735 "BJF Sales Print Events"
+codeunit 77535 "BJF Sales Print Events"
 {
     Access = Internal;
     SingleInstance = true;

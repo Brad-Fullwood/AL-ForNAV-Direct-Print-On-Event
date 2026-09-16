@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Implementation.Warehouse;
 using BradFullwood.ForNAV.Core;
 using Microsoft.Warehouse.History;
 
-codeunit 77753 "BJF Warehouse Print Events"
+codeunit 77553 "BJF Warehouse Print Events"
 {
     Access = Internal;
     SingleInstance = true;

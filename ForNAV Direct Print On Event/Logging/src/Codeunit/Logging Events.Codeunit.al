@@ -2,7 +2,7 @@ namespace BradFullwood.ForNAV.Logging;
 
 using BradFullwood.ForNAV.Core;
 
-codeunit 77720 "BJF Log Events"
+codeunit 77520 "BJF Log Events"
 {
     SingleInstance = true; // Prevent multiple instances of the codeunit from being created
     InherentPermissions = x;

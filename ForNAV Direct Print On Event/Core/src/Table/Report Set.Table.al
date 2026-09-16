@@ -7,7 +7,7 @@ namespace BradFullwood.ForNAV.Core;
 /// Stores information about available report sets registered by providers.
 /// A report set defines WHAT to print when a trigger fires.
 /// </remarks>
-table 77703 "BJF Report Set"
+table 77503 "BJF Report Set"
 {
     Caption = 'Report Sets';
     DataClassification = SystemMetadata;

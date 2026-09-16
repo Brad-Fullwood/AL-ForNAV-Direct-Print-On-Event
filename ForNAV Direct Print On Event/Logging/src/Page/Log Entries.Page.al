@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// Page for viewing log entries.
 /// </summary>
-page 77720 "BJF Log Entries"
+page 77520 "BJF Log Entries"
 {
     ApplicationArea = All;
     Caption = 'Direct Print Log';

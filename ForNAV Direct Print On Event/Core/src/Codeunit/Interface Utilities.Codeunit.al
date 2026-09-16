@@ -7,7 +7,7 @@ namespace BradFullwood.ForNAV.Core;
 /// This codeunit handles the registration of providers, report sets, printing triggers,
 /// and their associated source table mappings.
 /// </remarks>
-codeunit 77701 "BJF Interface Utils"
+codeunit 77501 "BJF Interface Utils"
 {
     Permissions = tabledata "BJF Provider" = rimd,
                   tabledata "BJF Report Set" = rimd,

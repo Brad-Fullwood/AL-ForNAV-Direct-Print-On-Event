@@ -8,7 +8,7 @@ using BradFullwood.ForNAV.Core;
 /// Sales-focused label sets provider.
 /// Handles all sales document labeling and events.
 /// </summary>
-codeunit 77734 "BJF Sales Implementation" implements "I-BJF Direct Print Interface"
+codeunit 77534 "BJF Sales Implementation" implements "I-BJF Direct Print Interface"
 {
     Access = Internal;
     InherentPermissions = x;

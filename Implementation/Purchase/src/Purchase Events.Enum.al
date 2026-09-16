@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Implementation.Purchase;
 /// <summary>
 /// Enum for purchase events.
 /// </summary>
-enum 77740 "BJF Purchase Events"
+enum 77540 "BJF Purchase Events"
 {
     Extensible = true;
     Caption = 'Purchase Events';

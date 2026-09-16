@@ -7,7 +7,7 @@ namespace BradFullwood.ForNAV.Core;
 /// Shows which Business Central tables are available as data sources for reports
 /// when specific triggers fire or for specific report sets.
 /// </remarks>
-page 77700 "BJF Source Table Mappings"
+page 77500 "BJF Source Table Mappings"
 {
     Caption = 'Source Table Mappings';
     PageType = ListPart;

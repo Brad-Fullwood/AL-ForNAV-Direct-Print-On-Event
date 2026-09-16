@@ -12,7 +12,7 @@ using System.Reflection;
 /// Processes a single print job from the buffer table.
 /// Designed to be run as scheduled tasks via TaskScheduler for invisible background processing.
 /// </remarks>
-codeunit 77703 "BJF Scheduled Task Runner"
+codeunit 77503 "BJF Scheduled Task Runner"
 {
     Access = Public;
     TableNo = "BJF Print Buffer";

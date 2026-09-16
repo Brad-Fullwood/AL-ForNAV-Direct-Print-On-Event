@@ -102,7 +102,7 @@ If you installed the Logging module, two extra buttons appear on the Direct Prin
 
 ```
 ForNAV Direct Print/
-+-- Core/                     # REQUIRED (ID: 77700-77719)
++-- Core/                     # REQUIRED (ID: 77500-77519)
 |   +-- Print Management      # Public API: QueuePrintReports()
 |   +-- Print Buffer          # Job queue with status tracking (Pending > Processing > Completed/Failed)
 |   +-- Task Scheduling       # Schedules background tasks on buffer insert
@@ -111,14 +111,14 @@ ForNAV Direct Print/
 |   +-- Source Table Mapping  # Tree view of providers, report sets, triggers, tables
 |   +-- Retention Policy      # BC retention policy integration for buffer cleanup
 |   +-- Setup Page            # Single entry point for all configuration
-+-- Logging/                  # OPTIONAL (ID: 77720-77729)
++-- Logging/                  # OPTIONAL (ID: 77520-77529)
 |   +-- Logging Manager       # SingleInstance codeunit, cached settings
 |   +-- Log Events            # Event subscribers for audit trail
 |   +-- Log Setup             # Configuration page (extends Core setup page)
 +-- Implementation/           # OPTIONAL - one module per business domain
-    +-- Sales/                # ID: 77730-77739
-    +-- Purchase/             # ID: 77740-77749
-    +-- Warehouse/            # ID: 77750-77759
+    +-- Sales/                # ID: 77530-77539
+    +-- Purchase/             # ID: 77540-77549
+    +-- Warehouse/            # ID: 77550-77559
 ```
 
 ### Print Flow
@@ -250,14 +250,14 @@ A rule for the report set and the reprint trigger must exist in Setup Reports, l
 
 | Module | Range |
 |--------|-------|
-| Core | 77700-77719 |
-| Logging | 77720-77729 |
-| Sales | 77730-77739 |
-| Purchase | 77740-77749 |
-| Warehouse | 77750-77759 |
-| Core Tests | 77800-77819 |
-| Performance Tests | 77820-77839 |
-| Implementation Tests | 77840-77859 |
+| Core | 77500-77519 |
+| Logging | 77520-77529 |
+| Sales | 77530-77539 |
+| Purchase | 77540-77549 |
+| Warehouse | 77550-77559 |
+| Core Tests | 77600-77619 |
+| Performance Tests | 77620-77639 |
+| Implementation Tests | 77640-77659 |
 
 ## Technical Stack
 

@@ -8,7 +8,7 @@ using Microsoft.Sales.Reports;
 /// Test codeunit for BJF Automatic Printing (77700).
 /// Tests GetNextSequence, NewRecord, DrillDownToSelectLayout, and field validations.
 /// </summary>
-codeunit 77704 "BJF Automatic Printing Tests"
+codeunit 77504 "BJF Automatic Printing Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;

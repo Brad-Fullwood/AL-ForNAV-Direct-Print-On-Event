@@ -9,7 +9,7 @@ using System.Utilities;
 /// Shows registered providers, report sets, and printing triggers with their 
 /// compatible source tables for report development.
 /// </remarks>
-page 77701 "BJF Direct Printing Setup"
+page 77501 "BJF Direct Printing Setup"
 {
     ApplicationArea = All;
     Caption = 'Direct Print Setup';

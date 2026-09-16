@@ -8,7 +8,7 @@ using System.Device;
 /// <remarks>
 /// Provides functionality for populating print buffers and managing print operations.
 /// </remarks>
-codeunit 77702 "BJF Print Management"
+codeunit 77502 "BJF Print Management"
 {
     Access = Public;
     Permissions = tabledata "Printer Selection" = r,

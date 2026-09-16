@@ -6,7 +6,7 @@ using System.Tooling;
 /// BJF test for processing print buffer entries.
 /// Measures performance of the scheduled task runner.
 /// </summary>
-codeunit 77821 "BJF Process Print Buffer Test" implements "BCPT Test Param. Provider"
+codeunit 77621 "BJF Process Print Buffer Test" implements "BCPT Test Param. Provider"
 {
     InherentPermissions = x;
 

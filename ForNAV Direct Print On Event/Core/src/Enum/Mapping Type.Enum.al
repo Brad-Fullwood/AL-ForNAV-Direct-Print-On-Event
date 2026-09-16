@@ -7,7 +7,7 @@ namespace BradFullwood.ForNAV.Core;
 /// Specifies whether a source table mapping is associated with a 
 /// Printing Trigger (when to print) or a Report Set (what to print).
 /// </remarks>
-enum 77702 "BJF Mapping Type"
+enum 77502 "BJF Mapping Type"
 {
     Extensible = true;
 

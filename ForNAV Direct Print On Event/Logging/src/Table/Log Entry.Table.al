@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// Log entry table for tracking system events and operations.
 /// </summary>
-table 77720 "BJF Log Entry"
+table 77520 "BJF Log Entry"
 {
     Caption = 'Log Entry';
     DataClassification = SystemMetadata;

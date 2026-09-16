@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// FactBox page for displaying log entry details.
 /// </summary>
-page 77722 "BJF Log Entry Details"
+page 77522 "BJF Log Entry Details"
 {
     ApplicationArea = All;
     Caption = 'Entry Details';

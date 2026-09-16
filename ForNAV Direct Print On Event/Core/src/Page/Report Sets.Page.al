@@ -6,7 +6,7 @@ namespace BradFullwood.ForNAV.Core;
 /// <remarks>
 /// Report sets define what reports/documents to print when a trigger fires.
 /// </remarks>
-page 77703 "BJF Report Sets"
+page 77503 "BJF Report Sets"
 {
     ApplicationArea = All;
     Caption = 'Report Sets';

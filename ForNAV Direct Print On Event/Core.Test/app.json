@@ -2,7 +2,7 @@
   "id": "729348ce-1d61-4d8b-984f-029ffc179a70",
   "name": "ForNAV Direct Print - Core Tests",
   "publisher": "Brad Fullwood",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "brief": "Unit tests for ForNAV Direct Print Core.",
   "description": "Contains unit tests to validate the functionality of the ForNAV Direct Print Core extension, ensuring reliability and correctness.",
   "privacyStatement": "",
@@ -15,7 +15,7 @@
       "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
       "name": "ForNAV Direct Print - Core",
       "publisher": "Brad Fullwood",
-      "version": "1.0.0.0"
+      "version": "1.0.0.2"
     },
     {
       "publisher": "Microsoft",
@@ -36,8 +36,8 @@
   "runtime": "16.0",
   "idRanges": [
     {
-      "from": 77800,
-      "to": 77819
+      "from": 77600,
+      "to": 77619
     }
   ],
   "features": [

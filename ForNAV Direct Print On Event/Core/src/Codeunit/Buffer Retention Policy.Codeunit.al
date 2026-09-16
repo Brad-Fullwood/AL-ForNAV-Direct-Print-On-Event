@@ -11,7 +11,7 @@ using System.Environment.Configuration;
 /// Registers Print Buffer table with BC's built-in retention policy framework.
 /// Allows automatic cleanup of old print buffer entries based on Created Date Time.
 /// </remarks>
-codeunit 77700 "BJF Print Buffer Ret. Policy"
+codeunit 77500 "BJF Print Buffer Ret. Policy"
 {
     Access = Internal;
     Subtype = Install;

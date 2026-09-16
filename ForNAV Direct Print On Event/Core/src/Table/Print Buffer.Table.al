@@ -9,7 +9,7 @@ using System.Security.AccessControl;
 /// Intermediary storage during label printing processes.
 /// Stores report information and settings that will be used for printing.
 /// </remarks>
-table 77704 "BJF Print Buffer"
+table 77504 "BJF Print Buffer"
 {
     Caption = 'Automatic Printing Print Buffer';
     DataClassification = CustomerContent;

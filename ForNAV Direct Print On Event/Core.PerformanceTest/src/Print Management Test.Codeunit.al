@@ -6,7 +6,7 @@ using System.Tooling;
 /// BJF test for mixed print management operations.
 /// Simulates realistic usage patterns with queue, process, and cleanup operations.
 /// </summary>
-codeunit 77823 "BJF Print Management Test" implements "BCPT Test Param. Provider"
+codeunit 77623 "BJF Print Management Test" implements "BCPT Test Param. Provider"
 {
     InherentPermissions = x;
 

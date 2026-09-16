@@ -2,7 +2,7 @@
   "id": "5360ceba-f19f-4f3c-b381-7b60e8245e2a",
   "name": "ForNAV Direct Print - Purchase",
   "publisher": "Brad Fullwood",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "brief": "Purchase event provider for ForNAV Direct Print.",
   "description": "Provides automatic direct printing of ForNAV reports triggered by purchase business events, such as posting purchase orders, invoices, and receipts.",
   "privacyStatement": "",
@@ -15,7 +15,7 @@
       "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
       "name": "ForNAV Direct Print - Core",
       "publisher": "Brad Fullwood",
-      "version": "1.0.0.0"
+      "version": "1.0.0.2"
     }
   ],
   "screenshots": [],
@@ -24,8 +24,8 @@
   "runtime": "16.0",
   "idRanges": [
     {
-      "from": 77740,
-      "to": 77749
+      "from": 77540,
+      "to": 77549
     }
   ],
   "features": [

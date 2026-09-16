@@ -2,7 +2,7 @@
   "id": "f2ae6113-738c-4b3b-a99c-94028d2de127",
   "name": "ForNAV Direct Print - Sales",
   "publisher": "Brad Fullwood",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "brief": "Sales event provider for ForNAV Direct Print.",
   "description": "Provides automatic direct printing of ForNAV reports triggered by sales business events, such as posting sales orders, invoices, and shipments.",
   "privacyStatement": "",
@@ -15,7 +15,7 @@
       "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
       "name": "ForNAV Direct Print - Core",
       "publisher": "Brad Fullwood",
-      "version": "1.0.0.0"
+      "version": "1.0.0.2"
     }
   ],
   "screenshots": [],
@@ -24,8 +24,8 @@
   "runtime": "16.0",
   "idRanges": [
     {
-      "from": 77730,
-      "to": 77739
+      "from": 77530,
+      "to": 77539
     }
   ],
   "features": [

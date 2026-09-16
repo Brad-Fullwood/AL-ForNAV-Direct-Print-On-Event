@@ -7,7 +7,7 @@ namespace BradFullwood.ForNAV.Core;
 /// Subscribes to Print Buffer inserts and schedules background tasks via TaskScheduler.
 /// Also serves as the failure codeunit — OnRun is called by the platform when the task runner fails.
 /// </remarks>
-codeunit 77704 "BJF Task Scheduling"
+codeunit 77504 "BJF Task Scheduling"
 {
     InherentPermissions = x;
     Access = Public;

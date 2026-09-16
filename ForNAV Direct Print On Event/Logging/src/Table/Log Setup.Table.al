@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// Setup table for logging configuration.
 /// </summary>
-table 77721 "BJF Log Setup"
+table 77521 "BJF Log Setup"
 {
     Caption = 'Log Setup';
     DataClassification = SystemMetadata;

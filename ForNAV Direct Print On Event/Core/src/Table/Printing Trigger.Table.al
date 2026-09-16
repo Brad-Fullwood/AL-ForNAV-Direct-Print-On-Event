@@ -8,7 +8,7 @@ namespace BradFullwood.ForNAV.Core;
 /// When combined with a Report Set, they create a complete print automation rule.
 /// Examples: "Sales Order Posted", "Purchase Receipt Created", "Item Movement"
 /// </remarks>
-table 77702 "BJF Printing Trigger"
+table 77502 "BJF Printing Trigger"
 {
     Caption = 'Printing Triggers';
     DataClassification = SystemMetadata;

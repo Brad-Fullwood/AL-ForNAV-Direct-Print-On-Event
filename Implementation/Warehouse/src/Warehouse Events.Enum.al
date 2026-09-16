@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Implementation.Warehouse;
 /// <summary>
 /// Enum for warehouse events.
 /// </summary>
-enum 77750 "BJF Warehouse Events"
+enum 77550 "BJF Warehouse Events"
 {
     Extensible = true;
     Caption = 'Warehouse Events';

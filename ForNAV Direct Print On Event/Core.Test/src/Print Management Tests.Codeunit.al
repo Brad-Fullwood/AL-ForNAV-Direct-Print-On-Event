@@ -7,7 +7,7 @@ using Microsoft.Sales.Reports;
 /// Test codeunit for BJF Print Management (77702).
 /// Tests QueuePrintReports, PopulateBufferWithContext, IsTriggerEnabledForReportSet, and event subscribers.
 /// </summary>
-codeunit 77700 "BJF Print Management Tests"
+codeunit 77500 "BJF Print Management Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;

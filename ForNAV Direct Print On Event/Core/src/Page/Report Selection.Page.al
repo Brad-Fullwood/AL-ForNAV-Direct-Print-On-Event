@@ -9,7 +9,7 @@ using System.Reflection;
 /// This page allows users to configure which reports should be printed for specific report sets
 /// and printing triggers, with support for different line types and printing sequences.
 /// </remarks>
-page 77704 "BJF Report Selection"
+page 77504 "BJF Report Selection"
 {
     ApplicationArea = Basic, Suite;
     Caption = 'Report Selection - Automatic Printing';

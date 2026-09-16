@@ -10,7 +10,7 @@ using Microsoft.Foundation.Reporting;
 /// This table manages the configuration of which reports to print for specific report sets
 /// and printing triggers, including customization for different line types and printing sequences.
 /// </remarks>
-table 77700 "BJF Automatic Printing"
+table 77500 "BJF Automatic Printing"
 {
     Caption = 'Report Selection - Automatic Printing';
     DataClassification = SystemMetadata;

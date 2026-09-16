@@ -8,7 +8,7 @@ using Microsoft.Purchases.Vendor;
 /// Test codeunit for BJF Source Table Mapping (77701).
 /// Tests source code validation, TriggerExists, ReportSetExists, and table relations.
 /// </summary>
-codeunit 77705 "BJF Source Table Mapping Tests"
+codeunit 77505 "BJF Source Table Mapping Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;

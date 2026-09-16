@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Core;
 /// <summary>
 /// FactBox page providing guidance on how automatic printing works.
 /// </summary>
-page 77705 "BJF Getting Started FactBox"
+page 77505 "BJF Getting Started FactBox"
 {
     Caption = 'Getting Started';
     PageType = CardPart;

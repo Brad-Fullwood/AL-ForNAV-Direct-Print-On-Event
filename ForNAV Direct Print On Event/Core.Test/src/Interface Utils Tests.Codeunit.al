@@ -6,7 +6,7 @@ using BradFullwood.ForNAV.Core;
 /// Test codeunit for BJF Interface Utils (77701).
 /// Tests provider registration, report set registration, trigger registration, and source table mapping management.
 /// </summary>
-codeunit 77701 "BJF Interface Utils Tests"
+codeunit 77501 "BJF Interface Utils Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;

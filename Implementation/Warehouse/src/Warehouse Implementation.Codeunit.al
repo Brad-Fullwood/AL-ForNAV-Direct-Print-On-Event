@@ -7,7 +7,7 @@ using BradFullwood.ForNAV.Core;
 /// Warehouse-focused label sets provider.
 /// Handles all warehouse document labeling and events.
 /// </summary>
-codeunit 77752 "BJF Warehouse Implementation" implements "I-BJF Direct Print Interface"
+codeunit 77552 "BJF Warehouse Implementation" implements "I-BJF Direct Print Interface"
 {
     Access = Internal;
     InherentPermissions = x;

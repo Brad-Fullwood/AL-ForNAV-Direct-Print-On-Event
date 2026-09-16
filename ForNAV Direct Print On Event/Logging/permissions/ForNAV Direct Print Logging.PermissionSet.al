@@ -1,6 +1,6 @@
 namespace BradFullwood.ForNAV.Logging;
 
-permissionset 77720 Logging
+permissionset 77520 Logging
 {
     Assignable = true;
     Caption = 'FNDP Logging', Locked = true;

@@ -1,6 +1,6 @@
 namespace BradFullwood.ForNAV.Core;
 
-pageextension 77700 "BJF ForNAV DirPrt Queue" extends "ForNAV DirPrt Queue"
+pageextension 77500 "BJF ForNAV DirPrt Queue" extends "ForNAV DirPrt Queue"
 {
     actions
     {

@@ -4,7 +4,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// Central logging manager for the ForNAV Direct Label Printing framework.
 /// Provides event-driven logging with minimal coupling to other components.
 /// </summary>
-codeunit 77721 "BJF Logging Manager"
+codeunit 77521 "BJF Logging Manager"
 {
     Access = Public;
     SingleInstance = true;

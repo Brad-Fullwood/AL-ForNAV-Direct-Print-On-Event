@@ -9,7 +9,7 @@ using System.Reflection;
 /// This table stores configuration for which label set providers are active and their order.
 /// It acts as a registry for all available label set providers in the system.
 /// </remarks>
-table 77705 "BJF Provider"
+table 77505 "BJF Provider"
 {
     Caption = 'Automatic Printing Providers';
     DataClassification = SystemMetadata;

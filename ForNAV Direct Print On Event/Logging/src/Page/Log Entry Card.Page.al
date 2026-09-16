@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// Card page for viewing detailed log entry information.
 /// </summary>
-page 77721 "BJF Log Entry Card"
+page 77521 "BJF Log Entry Card"
 {
     ApplicationArea = All;
     UsageCategory = None;

@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Implementation.Purchase;
 /// <summary>
 /// Enum for purchase label sets.
 /// </summary>
-enum 77741 "BJF Purchase Label Sets"
+enum 77541 "BJF Purchase Label Sets"
 {
     Extensible = true;
     Caption = 'Purchase Label Sets';

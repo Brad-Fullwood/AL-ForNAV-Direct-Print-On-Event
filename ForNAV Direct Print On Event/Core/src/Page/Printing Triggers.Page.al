@@ -6,7 +6,7 @@ namespace BradFullwood.ForNAV.Core;
 /// <remarks>
 /// Printing triggers represent business events that can initiate automatic printing.
 /// </remarks>
-page 77702 "BJF Printing Triggers"
+page 77502 "BJF Printing Triggers"
 {
     ApplicationArea = All;
     Caption = 'Printing Triggers';

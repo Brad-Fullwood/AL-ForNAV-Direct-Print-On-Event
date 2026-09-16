@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// Enum for log levels.
 /// </summary>
-enum 77721 "BJF Log Level"
+enum 77521 "BJF Log Level"
 {
     Extensible = false;
     Caption = 'Log Level';

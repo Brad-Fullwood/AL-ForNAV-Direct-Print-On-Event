@@ -1,6 +1,6 @@
 namespace BradFullwood.ForNAV.Core;
 
-permissionset 77700 Core
+permissionset 77500 Core
 {
     Assignable = true;
     Caption = 'FNDP Core', MaxLength = 30, Locked = true;

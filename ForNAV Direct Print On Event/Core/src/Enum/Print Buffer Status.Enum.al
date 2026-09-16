@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Core;
 /// <summary>
 /// Enum for Print Buffer Status values
 /// </summary>
-enum 77701 "BJF Print Buffer Status"
+enum 77501 "BJF Print Buffer Status"
 {
     Extensible = false;
 

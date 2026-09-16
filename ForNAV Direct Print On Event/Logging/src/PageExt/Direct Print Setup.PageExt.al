@@ -5,7 +5,7 @@ using BradFullwood.ForNAV.Core;
 /// <summary>
 /// Extends the Direct Print Setup page with logging navigation actions.
 /// </summary>
-pageextension 77720 "BJF Log Setup Actions" extends "BJF Direct Printing Setup"
+pageextension 77520 "BJF Log Setup Actions" extends "BJF Direct Printing Setup"
 {
     actions
     {

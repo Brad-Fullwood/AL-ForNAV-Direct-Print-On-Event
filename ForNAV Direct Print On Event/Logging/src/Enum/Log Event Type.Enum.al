@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// Enum for log event types.
 /// </summary>
-enum 77720 "BJF Log Event Type"
+enum 77520 "BJF Log Event Type"
 {
     Extensible = false;
     Caption = 'Log Event Type';

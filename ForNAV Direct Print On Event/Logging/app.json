@@ -2,7 +2,7 @@
   "id": "1076319c-728e-4180-b924-d0c6abe2014a",
   "name": "ForNAV Direct Print - Logging",
   "publisher": "Brad Fullwood",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "brief": "Optional logging module for ForNAV Direct Print.",
   "description": "Provides comprehensive logging capabilities for the ForNAV Direct Print extension, capturing events, errors, and operational details for monitoring and debugging.",
   "privacyStatement": "",
@@ -15,7 +15,7 @@
       "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
       "name": "ForNAV Direct Print - Core",
       "publisher": "Brad Fullwood",
-      "version": "1.0.0.0"
+      "version": "1.0.0.2"
     }
   ],
   "screenshots": [],
@@ -24,8 +24,8 @@
   "runtime": "16.0",
   "idRanges": [
     {
-      "from": 77720,
-      "to": 77729
+      "from": 77520,
+      "to": 77529
     }
   ],
   "features": [

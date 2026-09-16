@@ -4,7 +4,7 @@ namespace BradFullwood.ForNAV.Tests;
 /// Test runner for Core extension tests.
 /// Provides TestIsolation to automatically roll back database changes after each test codeunit.
 /// </summary>
-codeunit 77806 "BJF Test Runner"
+codeunit 77606 "BJF Test Runner"
 {
     Subtype = TestRunner;
     TestIsolation = Codeunit;

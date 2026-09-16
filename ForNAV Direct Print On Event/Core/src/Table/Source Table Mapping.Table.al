@@ -10,7 +10,7 @@ using System.Reflection;
 /// for reports when a specific trigger fires or for a specific report set.
 /// This is essential for report developers to know which dataset to use.
 /// </remarks>
-table 77701 "BJF Source Table Mapping"
+table 77501 "BJF Source Table Mapping"
 {
     Caption = 'Source Table Mappings';
     Extensible = false;

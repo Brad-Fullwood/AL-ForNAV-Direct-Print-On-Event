@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Implementation.Warehouse;
 /// <summary>
 /// Enum for warehouse label sets.
 /// </summary>
-enum 77751 "BJF Warehouse Label Sets"
+enum 77551 "BJF Warehouse Label Sets"
 {
     Extensible = true;
     Caption = 'Warehouse Label Sets';

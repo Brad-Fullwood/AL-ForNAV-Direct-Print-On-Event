@@ -6,7 +6,7 @@ using System.Tooling;
 /// BJF test for provider registration performance.
 /// Measures performance of RegisterAllProviders.
 /// </summary>
-codeunit 77822 "BJF Provider Registration Test" implements "BCPT Test Param. Provider"
+codeunit 77622 "BJF Provider Registration Test" implements "BCPT Test Param. Provider"
 {
     InherentPermissions = x;
 

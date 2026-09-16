@@ -7,7 +7,7 @@ using Microsoft.Sales.Reports;
 /// Test codeunit for BJF Print Buffer (77704).
 /// Tests OnInsert trigger, field validations, and status transitions.
 /// </summary>
-codeunit 77803 "BJF Print Buffer Tests"
+codeunit 77603 "BJF Print Buffer Tests"
 {
     Subtype = Test;
     TestPermissions = Restrictive;

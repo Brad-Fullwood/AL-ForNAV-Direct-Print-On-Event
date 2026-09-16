@@ -2,7 +2,7 @@
   "id": "89d04191-b38d-4dd1-ab07-b59a2279d285",
   "name": "ForNAV Direct Print - Implementation Tests",
   "publisher": "Brad Fullwood",
-  "version": "1.0.0.0",
+  "version": "1.0.0.1",
   "brief": "Tests for ForNAV Direct Print implementation modules.",
   "description": "Contains tests to validate the Sales, Purchase, and Warehouse implementation modules for the ForNAV Direct Print extension.",
   "privacyStatement": "",
@@ -30,8 +30,8 @@
   "runtime": "16.0",
   "idRanges": [
     {
-      "from": 77840,
-      "to": 77859
+      "from": 77640,
+      "to": 77659
     }
   ],
   "features": [

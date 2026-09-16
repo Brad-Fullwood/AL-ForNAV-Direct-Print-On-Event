@@ -3,7 +3,7 @@ namespace BradFullwood.ForNAV.Logging;
 /// <summary>
 /// Setup page for logging configuration.
 /// </summary>
-page 77723 "BJF Log Setup"
+page 77523 "BJF Log Setup"
 {
     ApplicationArea = All;
     Caption = 'Direct Print Log Setup';
