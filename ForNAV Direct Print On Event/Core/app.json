@@ -2,7 +2,7 @@
   "id": "1cbbfdbd-980c-4c8f-b0f7-e2cfcbd8d96c",
   "name": "ForNAV Direct Print - Core",
   "publisher": "Brad Fullwood",
-  "version": "1.0.0.2",
+  "version": "1.0.0.3",
   "brief": "Core functionality for ForNAV Direct Print.",
   "description": "Core components for automatically printing ForNAV reports triggered by business events. Includes print buffering, task scheduling, provider management, and ForNAV integration.",
   "privacyStatement": "",

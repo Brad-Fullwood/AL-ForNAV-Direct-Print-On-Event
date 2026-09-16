@@ -40,7 +40,6 @@ table 77500 "BJF Automatic Printing"
             ToolTip = 'Specifies the printing trigger (when to print) associated with this report selection.';
             TableRelation = "BJF Printing Trigger"."No.";
             ValidateTableRelation = false;
-            Editable = false;
             AllowInCustomizations = Never;
             NotBlank = true;
 

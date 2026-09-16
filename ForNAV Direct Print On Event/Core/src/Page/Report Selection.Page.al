@@ -73,37 +73,47 @@ page 77504 "BJF Report Selection"
                     DrillDown = false;
                     LookupPageId = Objects;
                 }
-                field("Trigger Description"; Rec."Trigger Description")
+                field("Trigger No."; Rec."Trigger No.")
                 {
                     Caption = 'Trigger';
-                    ToolTip = 'Specifies the printing trigger (when to print).';
+                    ToolTip = 'Specifies the printing trigger (when to print). The lookup lists the triggers whose source tables match the report set.';
                     ShowMandatory = true;
-                    Lookup = true;
-                    Editable = false;
+                    Editable = Rec."Report Set No." <> '';
 
+                    // A lookup on this code field, not on the description FlowField: the web
+                    // client renders a FlowField as a drilldown to its source record, so a
+                    // lookup trigger there never runs and the drilldown filters on the blank code.
                     trigger OnLookup(var Text: Text) Result: Boolean
                     var
                         PrintingTrigger: Record "BJF Printing Trigger";
-                        ReportSet: Record "BJF Report Set";
-                        TriggerFilter: Text;
                     begin
-                        PrintingTrigger.Reset();
-
-                        // Filter triggers by provider and matching source tables
-                        if (this.LookUpReportSet <> '') and ReportSet.Get(this.LookUpReportSet) then begin
-                            PrintingTrigger.SetRange("Provider No.", ReportSet."Provider No.");
-                            TriggerFilter := this.BuildValidTriggerFilter(ReportSet."Provider No.");
-                            if TriggerFilter <> '' then
-                                PrintingTrigger.SetFilter("No.", TriggerFilter);
-                        end;
-
+                        this.FilterValidTriggers(PrintingTrigger);
                         if not (Page.RunModal(Page::"BJF Printing Triggers", PrintingTrigger) = Action::LookupOK) then
                             exit(false);
-
                         this.InsertTriggersFromSelection(PrintingTrigger);
+                        Text := Rec."Trigger No.";
                         CurrPage.Update(false);
                         exit(true);
                     end;
+
+                    trigger OnValidate()
+                    var
+                        PrintingTrigger: Record "BJF Printing Trigger";
+                    begin
+                        if Rec."Trigger No." = '' then
+                            exit;
+                        this.FilterValidTriggers(PrintingTrigger);
+                        PrintingTrigger.SetRange("No.", Rec."Trigger No.");
+                        if PrintingTrigger.IsEmpty() then
+                            Error(this.TriggerNotValidErr, Rec."Trigger No.", Rec."Report Set No.");
+                    end;
+                }
+                field("Trigger Description"; Rec."Trigger Description")
+                {
+                    Caption = 'Trigger Description';
+                    ToolTip = 'Specifies the description of the printing trigger.';
+                    DrillDown = false;
+                    Editable = false;
                 }
                 field(ReportLayoutName; Rec."Report Layout Name")
                 {
@@ -195,6 +205,21 @@ page 77504 "BJF Report Selection"
         // Ensure the current record is properly initialized
         if Rec."Report Set No." = '' then
             Rec.Validate("Report Set No.", this.LookUpReportSet);
+    end;
+
+    /// <summary>Filters the triggers to the report set's provider and to those whose source tables match it.</summary>
+    local procedure FilterValidTriggers(var PrintingTrigger: Record "BJF Printing Trigger")
+    var
+        ReportSet: Record "BJF Report Set";
+        TriggerFilter: Text;
+    begin
+        PrintingTrigger.Reset();
+        if (this.LookUpReportSet = '') or not ReportSet.Get(this.LookUpReportSet) then
+            exit;
+        PrintingTrigger.SetRange("Provider No.", ReportSet."Provider No.");
+        TriggerFilter := this.BuildValidTriggerFilter(ReportSet."Provider No.");
+        if TriggerFilter <> '' then
+            PrintingTrigger.SetFilter("No.", TriggerFilter);
     end;
 
     local procedure BuildValidTriggerFilter(ProviderNo: Enum "BJF Direct Print Provider"): Text
@@ -289,4 +314,7 @@ page 77504 "BJF Report Selection"
         if this.IsInitialized then
             CurrPage.Update(true);
     end;
+
+    var
+        TriggerNotValidErr: Label 'Trigger %1 is not valid for report set %2: none of its source tables matches the report set.', Comment = '%1 = trigger code, %2 = report set code';
 }
