@@ -1,6 +1,6 @@
 # ForNAV Direct Print On Event
 
-> **UNTESTED -- This project is currently untested and under active development. It has not been validated in a production or sandbox environment. Use at your own risk.**
+> Tested on Business Central 28 with ForNAV 8.2 (sales shipment despatch notes through Direct Print, September 2026). Purchase and Warehouse modules compile and register but have not been exercised end to end.
 
 An AL extension for Microsoft Business Central that **automatically prints ForNAV reports when business events occur**. Post a sales order and the shipping labels print themselves. Receive a purchase order and the goods-in labels appear at the printer. No manual intervention required.
 
