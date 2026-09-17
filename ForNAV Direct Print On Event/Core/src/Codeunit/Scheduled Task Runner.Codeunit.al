@@ -145,6 +145,9 @@ codeunit 77503 "BJF Scheduled Task Runner"
             ReportLayoutSelection.SetTempLayoutSelected(LayoutCode);
 
         RecRef.Get(RecordId);
+        // Get positions the record but leaves the view unfiltered; the report would then run
+        // over the whole table, and document reports refuse to run without a filter.
+        RecRef.SetRecFilter();
         TempBlob.CreateOutStream(OutStr);
         Report.SaveAs(ReportID, '', ReportFormat::Pdf, OutStr, RecRef);
     end;
