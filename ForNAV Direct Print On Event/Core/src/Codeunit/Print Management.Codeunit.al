@@ -55,8 +55,10 @@ codeunit 77502 "BJF Print Management"
         end;
 
         // Get report selections
+        // Only the rules for this trigger: the report set holds one row per trigger and report.
         AutoPrinting.Reset();
         AutoPrinting.SetRange("Report Set No.", ReportSetNo);
+        AutoPrinting.SetRange("Trigger No.", TriggerNo);
         AutoPrinting.SetFilter("Report ID", '<>0');
 
         if AutoPrinting.IsEmpty() then begin
@@ -75,6 +77,9 @@ codeunit 77502 "BJF Print Management"
             exit;
 
         repeat
+            // Clear, not Init: Init leaves the primary key, and an Entry No. carried over from
+            // the previous insert would collide instead of letting AutoIncrement assign one.
+            Clear(PrintBuffer);
             PrintBuffer.Init();
             PrintBuffer."Source Record" := SourceRecordID;
 
