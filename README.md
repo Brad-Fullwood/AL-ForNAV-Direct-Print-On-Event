@@ -246,6 +246,20 @@ PrintMgmt.QueuePrintReports(RecRef, 'SALES-SHIPMENT-POSTED', 'SALES-REPRINT');
 
 A rule for the report set and the reprint trigger must exist in Setup Reports, like any other trigger.
 
+### Printing a ready document
+
+A document that is not a report (a carrier label from an API, a stored PDF) goes straight to a ForNAV printer with `QueueDocument`, bypassing the rules:
+
+```al
+PrintMgmt.QueueDocument('Warehouse Label Printer', 'DPD 12345678 label 1', LabelInStream, Enum::"BJF Print Content Type"::Zebra);
+```
+
+`PDF` is rendered by the printer service; `Zebra` is sent to the printer as raw ZPL or EPL.
+
+### Setup and diagnostics over the API
+
+Rules and the print buffer are exposed as APIs under `/api/bradfullwood/directPrint/v1.0/companies(<id>)/`: `rules` (POST with `reportSetNo`, `triggerNo`, `reportId`, `qtyToPrint`, `sequence`) and `printBufferEntries` (read-only: status, error message, timings).
+
 ## Object ID Ranges
 
 | Module | Range |

@@ -12,6 +12,8 @@ codeunit 77502 "BJF Print Management"
 {
     Access = Public;
     Permissions = tabledata "Printer Selection" = r,
+                  tabledata "ForNAV DirPrt Queue" = rim,
+                  tabledata "ForNAV Local Printer" = r,
                   tabledata "BJF Automatic Printing" = r,
                   tabledata "BJF Report Set" = r,
                   tabledata "BJF Printing Trigger" = r;
@@ -98,6 +100,31 @@ codeunit 77502 "BJF Print Management"
 
             PrintBuffer.Insert(true);
         until AutoPrinting.Next() = 0;
+    end;
+
+    /// <summary>
+    /// Sends a ready document (a carrier label, a file from an API) straight to a ForNAV
+    /// printer, bypassing report rendering and the rules. The caller names the cloud printer;
+    /// ForNAV resolves the local printer from ForNAV Local Printers.
+    /// </summary>
+    /// <param name="DirectPrinterName">The ForNAV cloud printer name (ForNAV Local Printers, Cloud Printer Name).</param>
+    /// <param name="DocumentName">What the queue shows for the job.</param>
+    /// <param name="DocumentInStream">The document content.</param>
+    /// <param name="ContentType">PDF, or raw Zebra data.</param>
+    procedure QueueDocument(DirectPrinterName: Text[250]; DocumentName: Text; DocumentInStream: InStream; ContentType: Enum "BJF Print Content Type")
+    var
+        ForNavPrintQueue: Record "ForNAV DirPrt Queue";
+        ForNavLocalPrinter: Record "ForNAV Local Printer";
+        PrinterMissingErr: Label 'ForNAV printer %1 does not exist. Choose one from ForNAV Local Printers.', Comment = '%1 = cloud printer name';
+    begin
+        if not ForNavLocalPrinter.Get(DirectPrinterName) then
+            Error(PrinterMissingErr, DirectPrinterName);
+        case ContentType of
+            ContentType::PDF:
+                ForNavPrintQueue.Create(DocumentName, DirectPrinterName, DocumentInStream, ForNavPrintQueue.ContentType::Pdf);
+            ContentType::Zebra:
+                ForNavPrintQueue.Create(DocumentName, DirectPrinterName, DocumentInStream, ForNavPrintQueue.ContentType::Zebra);
+        end;
     end;
 
     /// <summary>
